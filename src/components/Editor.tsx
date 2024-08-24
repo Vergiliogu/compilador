@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { useAppContext } from "../../contexts/useAppContext";
+import { useAppContext } from "../contexts/useAppContext";
 
 const editorRowHeight = 1.5; // rem = 24px
 const toolsBarHeight = 70; // px

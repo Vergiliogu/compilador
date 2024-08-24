@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { useAppContext } from "../../contexts/useAppContext";
+import { useAppContext } from "../contexts/useAppContext";
 
 export const MessageTerminal = () => {
   const terminalRef = useRef<HTMLDivElement | null>(null);
