@@ -8,7 +8,7 @@ function App() {
 
   return (
     <AppContextProvider>
-      <div className="w-full h-screen flex flex-col">
+      <div className="w-full h-screen flex flex-col relative">
         <ToolsBar />
         <Editor />
         <MessageTerminal />

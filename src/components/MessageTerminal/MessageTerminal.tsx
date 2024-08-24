@@ -1,8 +1,11 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import { twMerge } from "tailwind-merge";
+import { useAppContext } from "../../contexts/useAppContext";
 
 export const MessageTerminal = () => {
-  const [terminalHeight, setTerminalHeight] = useState(100);
   const terminalRef = useRef<HTMLDivElement | null>(null);
+
+  const { setTerminalHeight, terminalHeight } = useAppContext()
 
   const handleResize = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -27,7 +30,10 @@ export const MessageTerminal = () => {
 
   return (
     <div
-      className="w-full flex-grow-0 min-h-[100px] bg-red-600 overflow-hidden pb-2"
+      className={twMerge(
+        'w-full min-h-[100px] max-h-[80%] overflow-hidden pb-2',
+        'absolute bottom-[25px] left-0 right-0',
+      )}
       style={{ height: terminalHeight }}
       ref={terminalRef}
     >
@@ -37,8 +43,8 @@ export const MessageTerminal = () => {
       />
 
       <div className="w-full h-full overflow-scroll">
-        <p className="w-full h-full bg-transparent p-2 text-white">
-          WriteWriteWriteWri
+        <p className="w-full h-full bg-transparent p-2">
+          Write Write Write Wri
         </p>
       </div>
     </div>
