@@ -5,7 +5,6 @@ interface AppContextType {
   statusFile?: string;
   terminalHeight: number;
   setTerminalHeight: (height: number) => void;
-  handleNew: () => void;
   editorText: string;
   setEditorText: (text: string) => void;
   actions: {
@@ -17,20 +16,28 @@ interface AppContextType {
   }
 }
 
+interface LoadedFileMetaData {
+  filePath: string;
+  isNewFile: boolean;
+}
+
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppContextProvider = ({ children }: PropsWithChildren) => {
   const [terminalHeight, setTerminalHeight] = useState(100);
-  const [terminalMessage, setTerminalMessage] = useState<ReactNode>(undefined);
+  const [terminalMessage, setTerminalMessage] = useState<ReactNode>('');
   const [statusFile, setStatusFile] = useState<string | undefined>(undefined);
   const [editorText, setEditorText] = useState<string>('');
-  const [isNewFile, setIsNewFile] = useState<boolean>(true);
+  const [loadedFileMetaData, setLoadedFileMetaData] = useState<LoadedFileMetaData>({
+    filePath: '',
+    isNewFile: true,
+  });
 
   const handleNew = useCallback(() => {
     setTerminalMessage(undefined);
     setStatusFile(undefined);
     setEditorText('');
-    setIsNewFile(true);
+    setLoadedFileMetaData({ filePath: '', isNewFile: true });
   }, [])
 
   const handleOpenFile = useCallback(async () => {
@@ -41,23 +48,26 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
       setEditorText(fileContent || '');
       setStatusFile(filePath[0]);
       setTerminalMessage('');
-      setIsNewFile(false)
+      setLoadedFileMetaData({ filePath: filePath[0], isNewFile: false });
     }
   }, [])
 
   const handleSaveFile = useCallback(async () => {
-    if (isNewFile) {
+    if (loadedFileMetaData.isNewFile) {
       const { success, filePath } = await window.electron.openSaveFileDialog(editorText);
       if (!success) return;
 
       setStatusFile(filePath);
       setTerminalMessage('');
-      setIsNewFile(false)
+      setLoadedFileMetaData({ filePath: filePath, isNewFile: false });
     } else {
-      alert('Ainda não implementado')
-      setTerminalMessage('');
+      const { success } = await window.electron.writeFile(loadedFileMetaData.filePath, editorText);
+      if (!success)
+        setTerminalMessage('Não foi possível salvar o arquivo.');
+      else
+        setTerminalMessage('');
     }
-  }, [editorText, isNewFile])
+  }, [editorText, loadedFileMetaData])
 
   const handleCompile = useCallback(() => {
     setTerminalMessage('Compilação de programas ainda não foi implementada.')
@@ -105,7 +115,6 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
       terminalMessage,
       terminalHeight,
       setTerminalHeight,
-      handleNew,
       editorText,
       setEditorText,
       actions: {

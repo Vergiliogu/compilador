@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, accessSync, constants } from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -69,6 +69,17 @@ ipcMain.handle('save-file-dialog', async (_event, content: string) => {
   }
 
   return { success: false };
+});
+
+ipcMain.handle('write-file', async (_event, filePath: string, content: string) => {
+  try {
+    accessSync(filePath, constants.W_OK);
+    writeFileSync(filePath, content, 'utf-8');
+    return { success: true, filePath };
+  } catch (error) {
+    console.error('Error saving file:', error);
+    return { success: false, error };
+  }
 });
 
 ipcMain.handle('read-file', async (_event: unknown, filePath: string) => {
