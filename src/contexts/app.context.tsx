@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, ReactNode, useCallback, useEffect, useState } from "react";
+import { createContext, PropsWithChildren, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 interface AppContextType {
   terminalMessage?: ReactNode;
@@ -13,7 +13,11 @@ interface AppContextType {
     handleSaveFile: () => void;
     handleCompile: () => void;
     handleShowTeam: () => void;
+    handleCopyToClipboard: () => void;
+    handlePasteFromClipboard: () => void;
+    handleCutToClipboard: () => void;
   }
+  editorRef: React.MutableRefObject<HTMLTextAreaElement | null>;
 }
 
 interface LoadedFileMetaData {
@@ -28,6 +32,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
   const [terminalMessage, setTerminalMessage] = useState<ReactNode>('');
   const [statusFile, setStatusFile] = useState<string | undefined>(undefined);
   const [editorText, setEditorText] = useState<string>('');
+  const editorRef = useRef<HTMLTextAreaElement | null>(null);
   const [loadedFileMetaData, setLoadedFileMetaData] = useState<LoadedFileMetaData>({
     filePath: '',
     isNewFile: true,
@@ -83,6 +88,41 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
     )
   }, [])
 
+  const handleCopyToClipboard = useCallback(async () => {
+    if (!editorRef.current) return;
+    
+    const start = editorRef.current.selectionStart;
+    const end = editorRef.current.selectionEnd;
+    const selectedText = editorRef.current.value.substring(start, end);
+    await navigator.clipboard.writeText(selectedText);
+  }, [])
+
+  const handleCutToClipboard = useCallback(async () => {
+    if (!editorRef.current) return;
+
+    const start = editorRef.current.selectionStart;
+    const end = editorRef.current.selectionEnd;
+    const selectedText = editorRef.current.value.substring(start, end);
+
+    editorRef.current.value = editorRef.current.value.substring(0, start) + editorRef.current.value.substring(end);
+    editorRef.current.selectionStart = start;
+    editorRef.current.selectionEnd = start;
+    await navigator.clipboard.writeText(selectedText);
+    setEditorText(editorRef.current.value);
+  }, [])
+
+  const handlePasteFromClipboard = useCallback(async () => {
+    const text = await navigator.clipboard.readText()
+    if (!editorRef.current) return;
+
+    const start = editorRef.current.selectionStart;
+    const end = editorRef.current.selectionEnd;
+    editorRef.current.value = editorRef.current.value.substring(0, start) + text + editorRef.current.value.substring(end);
+    editorRef.current.selectionStart = start + text.length;
+    editorRef.current.selectionEnd = start + text.length;
+    setEditorText(editorRef.current.value);
+  }, [])
+
   useEffect(() => {
     const shortcuts = [
       { ctrl: true, key: 'N', action: handleNew },
@@ -107,7 +147,16 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [handleNew, handleOpenFile, handleSaveFile, handleCompile, handleShowTeam])
+  }, [
+    handleNew,
+    handleOpenFile,
+    handleSaveFile,
+    handleCompile,
+    handleShowTeam,
+    handleCopyToClipboard,
+    handlePasteFromClipboard,
+    handleCutToClipboard,
+  ])
 
   return (
     <AppContext.Provider value={{
@@ -123,7 +172,11 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
         handleSaveFile,
         handleCompile,
         handleShowTeam,
-      }
+        handleCopyToClipboard,
+        handlePasteFromClipboard,
+        handleCutToClipboard,
+      },
+      editorRef,
     }}>
       {children}
     </AppContext.Provider>

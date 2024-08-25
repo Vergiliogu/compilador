@@ -13,9 +13,9 @@ export const ToolsBar = () => {
       <ToolButton iconPath="/new-file-icon.svg" label="Novo [CTRL + N]" onClick={actions.handleNew} />
       <ToolButton iconPath="/open-file-icon.svg" label="Abrir [CTRL + O]" onClick={actions.handleOpenFile} />
       <ToolButton iconPath="/save-file-icon.svg" label="Salvar [CTRL + S]" onClick={actions.handleSaveFile} />
-      <ToolButton iconPath="/copy-icon.svg" label="Copiar [CTRL + C]" onClick={() => alert('Copiar')} />
-      <ToolButton iconPath="/paste-icon.svg" label="Colar [CTRL + V]" onClick={() => alert('Colar')} />
-      <ToolButton iconPath="/cut-icon.svg" label="Recortar [CTRL + X]" onClick={() => alert('Recortar')} />
+      <ToolButton iconPath="/copy-icon.svg" label="Copiar [CTRL + C]" onClick={actions.handleCopyToClipboard} />
+      <ToolButton iconPath="/paste-icon.svg" label="Colar [CTRL + V]" onClick={actions.handlePasteFromClipboard} />
+      <ToolButton iconPath="/cut-icon.svg" label="Recortar [CTRL + X]" onClick={actions.handleCutToClipboard} />
       <ToolButton iconPath="/compile-icon.svg" label="Compilar [F7]" onClick={actions.handleCompile} />
       <ToolButton iconPath="/team-icon.svg" label="Equipe [F1]" onClick={actions.handleShowTeam} />
     </div>

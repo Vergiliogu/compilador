@@ -10,7 +10,7 @@ export const Editor = () => {
   const [editorRows, setEditorRows] = useState(1);
   const [editorLongestColumn, setEditorLongestColumn] = useState(1);
 
-  const { terminalHeight, editorText, setEditorText } = useAppContext()
+  const { terminalHeight, editorText, setEditorText, editorRef } = useAppContext()
 
   const handleEditorContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -54,6 +54,7 @@ export const Editor = () => {
           </div>
 
           <textarea
+            ref={editorRef}
             className={twMerge(
               'flex-grow bg-transparent pt-4 pl-2 text-lg resize-none outline-none leading-6 whitespace-nowrap',
               'min-h-full overflow-y-hidden overflow-x-hidden font-mono',
