@@ -1,4 +1,4 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import { ipcRenderer, contextBridge, clipboard } from 'electron'
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -22,3 +22,13 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // You can expose other APTs you need here.
   // ...
 })
+
+contextBridge.exposeInMainWorld('electron', {
+  openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
+  openSaveFileDialog: (content: string) => ipcRenderer.invoke('save-file-dialog', content),
+  readFile: (filePath: string) => ipcRenderer.invoke('read-file', filePath),
+  clipboard: {
+    writeText: (text: string) => clipboard.writeText.bind(clipboard)(text),
+    readText: () => clipboard.readText(),
+  },
+});

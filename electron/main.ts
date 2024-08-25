@@ -1,30 +1,19 @@
-import { app, BrowserWindow } from 'electron'
-// import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { readFileSync, writeFileSync } from 'node:fs';
 
-// const require = createRequire(import.meta.url)
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.mjs
-// │
-process.env.APP_ROOT = path.join(__dirname, '..')
+process.env.APP_ROOT = path.join(__dirname, '..');
 
-// 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
-export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
-export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
-export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
+export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
+export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
+export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
+process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
 
-let win: BrowserWindow | null
+let win: BrowserWindow | null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -33,41 +22,77 @@ function createWindow() {
     minHeight: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
-      devTools: true,
+      devTools: false, // Disable DevTools
+      contextIsolation: true, // Ensures security when exposing APIs
+      nodeIntegration: false, // Ensures no direct access to Node APIs
     },
-  })
-
-  win.webContents.openDevTools();
+  });
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
-  })
+    win?.webContents.send('main-process-message', new Date().toLocaleString());
+  });
 
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
+    win.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    // win.loadFile('dist/index.html')
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
+    win.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
 }
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Handle file dialog request from renderer
+ipcMain.handle('open-file-dialog', async () => {
+  const result = await dialog.showOpenDialog(win!, {
+    properties: ['openFile'],
+    filters: [{ name: 'Text Files', extensions: ['txt'] }]
+  });
+  return result.filePaths;
+});
+
+ipcMain.handle('save-file-dialog', async (_event, content: string) => {
+  const { filePath } = await dialog.showSaveDialog(win!, {
+    title: 'Salvar arquivo',
+    filters: [
+      { name: 'Text Files', extensions: ['txt'] },
+      { name: 'All Files', extensions: ['*'] },
+    ],
+  });
+
+  if (filePath) {
+    try {
+      writeFileSync(filePath, content, 'utf-8');
+      return { success: true, filePath };
+    } catch (error) {
+      console.error('Error saving file:', error);
+      return { success: false, error };
+    }
+  }
+
+  return { success: false };
+});
+
+ipcMain.handle('read-file', async (_event: unknown, filePath: string) => {
+  try {
+    const data = readFileSync(filePath, 'utf-8'); // Read file content
+    return data; // Return file content
+  } catch (error: any) {
+    console.error('Error reading file:', error);
+    return null; // Return null in case of an error
+  }
+});
+
+// Quit when all windows are closed, except on macOS.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit()
-    win = null
+    app.quit();
+    win = null;
   }
-})
+});
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    createWindow();
   }
-})
+});
 
-app.whenReady().then(createWindow)
+app.whenReady().then(createWindow);

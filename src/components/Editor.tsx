@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useAppContext } from "../contexts/useAppContext";
 
@@ -10,12 +10,15 @@ export const Editor = () => {
   const [editorRows, setEditorRows] = useState(1);
   const [editorLongestColumn, setEditorLongestColumn] = useState(1);
 
-  const { terminalHeight } = useAppContext()
+  const { terminalHeight, editorText, setEditorText } = useAppContext()
 
   const handleEditorContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
+    setEditorText(newValue);
+  }
 
-    const lines = newValue.split('\n')
+  useEffect(() => {
+    const lines = editorText.split('\n')
 
     let longestAmountofChars = 0;
     for (let i = 0; i < lines.length; i++) {
@@ -30,7 +33,8 @@ export const Editor = () => {
     // Get how many rows the editor has based on the number of line breaks
     if (lines.length !== editorRows)
       setEditorRows(lines.length);
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editorText])
 
   return (
     <div className="w-full flex-grow overflow-y-hidden">
@@ -59,7 +63,7 @@ export const Editor = () => {
               minWidth: `${editorLongestColumn}ch`,
             }}
             onChange={handleEditorContent}
-            defaultValue={''}
+            value={editorText}
           />
         </div>
       </div>

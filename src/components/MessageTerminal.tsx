@@ -5,7 +5,7 @@ import { useAppContext } from "../contexts/useAppContext";
 export const MessageTerminal = () => {
   const terminalRef = useRef<HTMLDivElement | null>(null);
 
-  const { setTerminalHeight, terminalHeight } = useAppContext()
+  const { setTerminalHeight, terminalHeight, terminalMessage } = useAppContext()
 
   const handleResize = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -44,7 +44,7 @@ export const MessageTerminal = () => {
 
       <div className="w-full h-full overflow-scroll">
         <p className="w-full h-full bg-transparent p-2">
-          Write Write Write Wri
+          {terminalMessage}
         </p>
       </div>
     </div>
