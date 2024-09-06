@@ -39,6 +39,7 @@ public class Lexico implements Constants
         while (hasInput())
         {
             lastState = state;
+            
             state = nextState(nextChar(), state);
 
             if (state < 0)
@@ -54,7 +55,7 @@ public class Lexico implements Constants
             }
         }
         if (endState < 0 || (endState != state && tokenForState(lastState) == -2))
-            throw new LexicalError(SCANNER_ERROR[lastState], start, "a");
+            throw new LexicalError(SCANNER_ERROR[lastState], start, " | " + start + " " + end + " | "); // TODO: pass lexeme
 
         position = end;
 
