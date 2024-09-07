@@ -216,9 +216,70 @@ public class LexicalAnalysisTest {
                     """;
 
             assertThatWasCompiledSuccessfully(validIdentifier);
-
         }
 
+    }
+
+    @Nested
+    class BlockComments {
+
+        @Test
+        void shouldThrowForInvalidBlockComment() {
+            String invalidBlockComment =
+                    """
+                    i_a
+                    b_a
+                    >@
+                    teste
+                    teste
+                    teste@
+                    @<
+                    """;
+
+            String errorMessage = String.format("%slinha 3: %s",
+                    LexicalAnalysis.Messages.LEXICAL_ERROR,
+                    ScannerConstants.INVALID_BLOCK_COMENT);
+
+            assertOutputToBe(errorMessage, invalidBlockComment);
+        }
+
+    }
+
+    @Test
+    void shouldPassWithValidSourceCode() {
+        String validSourceCode =
+                """
+                i_int2
+                s_string
+                f_float1
+                
+                >@
+                this is a valid block comment
+                @<
+                
+                b_booleanTouF
+                i_AaA123
+                f_a111A
+                
+                if (i_a && "teste string") repeat until
+                
+                1,0
+                1124124
+                
+                while (i_a) (
+                    write "teste 123 teste 456 %x %x %x"
+                )
+                
+                >@
+                this is another valid block comment
+                
+                if (f_a1 < 10,0) read (1)
+                
+                with more lines, actually
+                @<
+                """;
+
+        assertThatWasCompiledSuccessfully(validSourceCode);
     }
 
     private void assertOutputToBe(String expectedOutput, String sourceCode) {

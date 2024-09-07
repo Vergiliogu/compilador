@@ -53,15 +53,14 @@ public class Lexico implements Constants {
             String errorToThrow = SCANNER_ERROR[lastState];
 
             switch (errorToThrow) {
+                case ScannerConstants.INVALID_BLOCK_COMENT, ScannerConstants.INVALID_STRING ->
+                        throw new LexicalError(errorToThrow, lineNumber);
+
                 case ScannerConstants.INVALID_SYMBOL ->
                         throw new LexicalError(String.format("%s %s", computedChar, errorToThrow), lineNumber);
 
-                case ScannerConstants.INVALID_STRING ->
-                        throw new LexicalError(errorToThrow, lineNumber);
-
                 case ScannerConstants.INVALID_IDENTIFIER ->
-                    throw new LexicalError(String.format("%s %s", input.substring(start, position), errorToThrow), lineNumber);
-
+                     throw new LexicalError(String.format("%s %s", input.substring(start, position), errorToThrow), lineNumber);
             }
         }
 
