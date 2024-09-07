@@ -1,5 +1,7 @@
 package com.domain.lexical;
 
+import java.util.Arrays;
+
 public class Lexico implements Constants {
 
     private int position;
@@ -56,7 +58,6 @@ public class Lexico implements Constants {
             throw new LexicalError(errorToThrow, lineNumber);
         }
 
-        if (computedChar == '\n') lineNumber++;
 
         position = end;
 
@@ -67,6 +68,15 @@ public class Lexico implements Constants {
 
         String lexeme = input.substring(start, end);
         token = lookupToken(token, lexeme);
+
+        boolean isReservedWord = token == Constants.t_palavra_reservada;
+
+        boolean unidentifiedReservedWord = Arrays.stream(ScannerConstants.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
+
+        if (isReservedWord && unidentifiedReservedWord)
+            throw new LexicalError(String.format("%s %s", lexeme, ScannerConstants.INVALID_RESERVED_WORD), lineNumber);
+
+        if (computedChar == '\n') lineNumber++;
 
         return new Token(token, lexeme, start);
     }

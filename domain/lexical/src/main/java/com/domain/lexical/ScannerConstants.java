@@ -1190,6 +1190,7 @@ public interface ScannerConstants {
 
     int[] SPECIAL_CASES_VALUES = { 6, 7, 4, 8, 5, 3, 10, 13, 9, 14, 15, 11, 12 };
 
+    Object INVALID_RESERVED_WORD = "palavra reservada inválida";
     String INVALID_BLOCK_COMENT = "comentário de bloco inválido ou não finalizado"; // + linha
     String INVALID_FLOAT = "Erro identificando constante_float";
     String INVALID_ID = "identificador inválido"; // + linha + sequencia nao reconhecida
@@ -1228,17 +1229,17 @@ public interface ScannerConstants {
         INVALID_FLOAT,
         "",
         INVALID_BLOCK_COMENT,
-        INVALID_ID, 
+        INVALID_ID,
         "",
         "",
-        INVALID_BLOCK_COMENT, 
+        INVALID_BLOCK_COMENT,
         "",
         "",
         INVALID_FLOAT,
-        INVALID_BLOCK_COMENT, 
+        INVALID_BLOCK_COMENT,
         "",
-        INVALID_BLOCK_COMENT, 
-        INVALID_BLOCK_COMENT, 
+        INVALID_BLOCK_COMENT,
+        INVALID_BLOCK_COMENT,
         ""
     };
 }
