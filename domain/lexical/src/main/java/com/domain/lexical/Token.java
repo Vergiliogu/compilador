@@ -1,35 +1,30 @@
 package com.domain.lexical;
 
-public class Token
-{
-    private int id;
-    private String lexeme;
-    private int position;
+public class Token {
 
-    public Token(int id, String lexeme, int position)
-    {
+    private final int id;
+    private final String lexeme;
+    private final int position;
+
+    public Token(int id, String lexeme, int position) {
         this.id = id;
         this.lexeme = lexeme;
         this.position = position;
     }
 
-    public final int getId()
-    {
+    public final int getId() {
         return id;
     }
 
-    public final String getLexeme()
-    {
+    public final String getLexeme() {
         return lexeme;
     }
 
-    public final int getPosition()
-    {
+    public final int getPosition() {
         return position;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return id+" ( "+lexeme+" ) @ "+position;
-    };
+    }
 }

@@ -1,7 +1,7 @@
 package com.domain.lexical;
 
-public interface Constants extends ScannerConstants
-{
+public interface Constants extends ScannerConstants {
+
     int EPSILON  = 0;
     int DOLLAR   = 1;
 
@@ -39,5 +39,4 @@ public interface Constants extends ScannerConstants
     int t_TOKEN_33 = 33; //"="
     int t_TOKEN_34 = 34; //"("
     int t_TOKEN_35 = 35; //")"
-
 }

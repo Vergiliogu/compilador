@@ -1,8 +1,9 @@
 package com.domain.lexical;
-public class AnalysisError extends Exception
-{
-    private int position;
-    private String lexeme;
+
+public class AnalysisError extends Exception {
+
+    private final int position;
+    private final String lexeme;
 
     public AnalysisError(String msg, int position, String lexeme)
     {

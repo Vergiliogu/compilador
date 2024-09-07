@@ -1,34 +1,25 @@
 package com.domain.lexical;
 
-public class Lexico implements Constants
-{
+public class Lexico implements Constants {
+
     private int position;
     private String input;
 
-    public Lexico()
-    {
-        this("");
-    }
-
-    public Lexico(String input)
-    {
+    public Lexico(String input) {
         setInput(input);
     }
 
-    public void setInput(String input)
-    {
+    public void setInput(String input) {
         this.input = input;
         setPosition(0);
     }
 
-    public void setPosition(int pos)
-    {
+    public void setPosition(int pos) {
         position = pos;
     }
 
-    public Token nextToken() throws LexicalError
-    {
-        if ( ! hasInput() )
+    public Token nextToken() throws LexicalError {
+        if (!hasInput())
             return null;
 
         int start = position;
@@ -38,8 +29,7 @@ public class Lexico implements Constants
         int endState = -1;
         int end = -1;
 
-        while (hasInput())
-        {
+        while (hasInput()) {
             lastState = state;
             
             state = nextState(nextChar(), state);
@@ -47,13 +37,9 @@ public class Lexico implements Constants
             if (state < 0)
                 break;
 
-            else
-            {
-                if (tokenForState(state) >= 0)
-                {
-                    endState = state;
-                    end = position;
-                }
+            if (tokenForState(state) >= 0) {
+                endState = state;
+                end = position;
             }
         }
         if (endState < 0 || (endState != state && tokenForState(lastState) == -2))
@@ -65,25 +51,21 @@ public class Lexico implements Constants
 
         if (token == 0)
             return nextToken();
-        else
-        {
-            String lexeme = input.substring(start, end);
-            token = lookupToken(token, lexeme);
 
-            if (token == Constants.t_palavra_reservada)
-                throw new LexicalError(ScannerConstants.SCANNER_ERROR[lastState], start, lexeme);
-                
-            return new Token(token, lexeme, start);
-        }
+        String lexeme = input.substring(start, end);
+        token = lookupToken(token, lexeme);
+
+        if (token == Constants.t_palavra_reservada)
+            throw new LexicalError(ScannerConstants.SCANNER_ERROR[lastState], start, lexeme);
+
+        return new Token(token, lexeme, start);
     }
 
-    private int nextState(char c, int state)
-    {
+    private int nextState(char c, int state) {
         int start = ScannerConstants.SCANNER_TABLE_INDEXES[state];
-        int end   = ScannerConstants.SCANNER_TABLE_INDEXES[state+1]-1;
+        int end   = ScannerConstants.SCANNER_TABLE_INDEXES[state + 1] - 1;
 
-        while (start <= end)
-        {
+        while (start <= end) {
             int half = (start+end)/2;
 
             if (ScannerConstants.SCANNER_TABLE[half][0] == c)
@@ -97,45 +79,40 @@ public class Lexico implements Constants
         return -1;
     }
 
-    private int tokenForState(int state)
-    {
+    private int tokenForState(int state) {
         if (state < 0 || state >= ScannerConstants.TOKEN_STATE.length)
             return -1;
 
         return ScannerConstants.TOKEN_STATE[state];
     }
 
-    public int lookupToken(int base, String key)
-    {
+    public int lookupToken(int base, String key) {
         int start = ScannerConstants.SPECIAL_CASES_INDEXES[base];
-        int end   = ScannerConstants.SPECIAL_CASES_INDEXES[base+1]-1;
+        int end = ScannerConstants.SPECIAL_CASES_INDEXES[base + 1] - 1;
 
-        while (start <= end)
-        {
-            int half = (start+end)/2;
+        while (start <= end) {
+            int half = (start + end) / 2;
             int comp = ScannerConstants.SPECIAL_CASES_KEYS[half].compareTo(key);
 
             if (comp == 0)
                 return ScannerConstants.SPECIAL_CASES_VALUES[half];
             else if (comp < 0)
                 start = half+1;
-            else  //(comp > 0)
+            else  // (comp > 0)
                 end = half-1;
         }
 
         return base;
     }
 
-    private boolean hasInput()
-    {
+    private boolean hasInput() {
         return position < input.length();
     }
 
-    private char nextChar()
-    {
+    private char nextChar() {
         if (hasInput())
             return input.charAt(position++);
-        else
-            return (char) -1;
+
+        return (char) -1;
     }
 }

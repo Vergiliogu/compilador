@@ -1,9 +1,8 @@
 package com.domain.lexical;
 
-public interface ScannerConstants
-{
-    int[] SCANNER_TABLE_INDEXES = 
-    {
+public interface ScannerConstants {
+
+    int[] SCANNER_TABLE_INDEXES = {
         0,
         54,
         54,
@@ -49,8 +48,7 @@ public interface ScannerConstants
         1131
     };
 
-    int[][] SCANNER_TABLE = 
-    {
+    int[][] SCANNER_TABLE = {
         {9, 1},
         {10, 1},
         {32, 1},
@@ -1184,16 +1182,13 @@ public interface ScannerConstants
         {60, 41}
     };
 
-    int[] TOKEN_STATE = {-2,  0, 22, -1, -1, 34, 35, 29, 27, 31, 28, 30, 17, 17, 32, 25, 33, 26,  2,  2,  2,  2,  2, -1, 24, 19, -1, 20, -1, 23, -2, -2, 21, 18, -2, 16, 16, -1, -2, 16, -2,  0 };
+    int[] TOKEN_STATE = { -2,  0, 22, -1, -1, 34, 35, 29, 27, 31, 28, 30, 17, 17, 32, 25, 33, 26,  2,  2,  2,  2,  2, -1, 24, 19, -1, 20, -1, 23, -2, -2, 21, 18, -2, 16, 16, -1, -2, 16, -2,  0 };
 
-    int[] SPECIAL_CASES_INDEXES =
-        { 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13 };
+    int[] SPECIAL_CASES_INDEXES = { 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13 };
 
-    String[] SPECIAL_CASES_KEYS =
-        {  "elif", "else", "end", "false", "if", "main", "read", "repeat", "true", "until", "while", "write", "writeln" };
+    String[] SPECIAL_CASES_KEYS = { "elif", "else", "end", "false", "if", "main", "read", "repeat", "true", "until", "while", "write", "writeln" };
 
-    int[] SPECIAL_CASES_VALUES =
-        {  6, 7, 4, 8, 5, 3, 10, 13, 9, 14, 15, 11, 12 };
+    int[] SPECIAL_CASES_VALUES = { 6, 7, 4, 8, 5, 3, 10, 13, 9, 14, 15, 11, 12 };
 
     String INVALID_BLOCK_COMENT = "comentário de bloco inválido ou não finalizado"; // + linha
     String INVALID_FLOAT = "Erro identificando constante_float";
@@ -1201,8 +1196,7 @@ public interface ScannerConstants
     String INVALID_STRING = "constante_string inválida"; // + linha
     String INVALID_SYMBOL = "símbolo inválido"; // + linha + sequencia nao reconhecida
 
-    String[] SCANNER_ERROR =
-    {
+    String[] SCANNER_ERROR = {
         INVALID_SYMBOL,
         "",
         "",
@@ -1247,5 +1241,4 @@ public interface ScannerConstants
         INVALID_BLOCK_COMENT, 
         ""
     };
-
 }
