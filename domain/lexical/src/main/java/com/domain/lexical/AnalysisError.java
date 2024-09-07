@@ -2,30 +2,26 @@ package com.domain.lexical;
 
 public class AnalysisError extends Exception {
 
-    private final int position;
+    private final int lineNumber;
     private final String lexeme;
 
-    public AnalysisError(String msg, int position, String lexeme) {
+    public AnalysisError(String msg, int lineNumber, String lexeme) {
         super(msg);
-        this.position = position;
+        this.lineNumber = lineNumber;
         this.lexeme = lexeme;
     }
 
     public AnalysisError(String msg, String lexeme) {
         super(msg);
-        this.position = -1;
+        this.lineNumber = -1;
         this.lexeme = lexeme;
     }
 
     public int getPosition() {
-        return position;
+        return lineNumber;
     }
 
     public String getLexeme() {
         return lexeme;
-    }
-
-    public String toString() {
-        return super.toString() + ", @ "+position;
     }
 }
