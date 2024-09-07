@@ -1,16 +1,15 @@
 package com.domain.lexical;
 
-public class LexicalError extends AnalysisError {
+public class LexicalError extends Exception {
 
-    public LexicalError(String msg, int lineNumber, String lexeme) {
-        super(msg, lineNumber, lexeme);
-    }
-
-    public LexicalError(String msg, String lexeme) {
-        super(msg, lexeme);
-    }
+    private final int lineNumber;
 
     public LexicalError(String msg, int lineNumber) {
-        super(msg, lineNumber, "");
+        super(msg);
+        this.lineNumber = lineNumber;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
     }
 }

@@ -11,13 +11,13 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LexicalAnalysisTest {
+public class LexicalAnalyserTest {
 
-    private LexicalAnalysis lexical;
+    private LexicalAnalyser lexical;
 
     @BeforeEach
     void setup() {
-        lexical = new LexicalAnalysis();
+        lexical = new LexicalAnalyser();
     }
 
     @Nested
@@ -31,8 +31,7 @@ public class LexicalAnalysisTest {
                     "
                     """;
 
-            assertOutputToBe(
-                    LexicalAnalysis.Messages.LEXICAL_ERROR + "linha 1: " + ScannerConstants.INVALID_STRING, stringWithLineFeed);
+            assertOutputToBe(String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 1, ScannerConstants.INVALID_STRING), stringWithLineFeed);
         }
 
         @Test
@@ -42,8 +41,7 @@ public class LexicalAnalysisTest {
                     "Valor necessário: %a"
                     """;
 
-            assertOutputToBe(
-                    LexicalAnalysis.Messages.LEXICAL_ERROR + "linha 1: " + ScannerConstants.INVALID_STRING, stringWithInvalidSpecifier);
+            assertOutputToBe(String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 1, ScannerConstants.INVALID_STRING), stringWithInvalidSpecifier);
         }
 
         @Test
@@ -81,8 +79,7 @@ public class LexicalAnalysisTest {
                     "
                     """;
 
-            assertOutputToBe(
-                    LexicalAnalysis.Messages.LEXICAL_ERROR + "linha 4: " + ScannerConstants.INVALID_STRING, stringWithLineFeed);
+            assertOutputToBe(String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 4, ScannerConstants.INVALID_STRING), stringWithLineFeed);
         }
 
     }
@@ -96,10 +93,10 @@ public class LexicalAnalysisTest {
                 "_", "#" ,"$", "@", "^", "&", "`", "~"
         })
         void shouldThrowForInvalidSymbol(String invalidSymbol) {
-            String errorMessage = String.format("%slinha 1: %s %s",
-                    LexicalAnalysis.Messages.LEXICAL_ERROR,
-                    invalidSymbol,
-                    ScannerConstants.INVALID_SYMBOL);
+            String errorMessage = String.format(
+                    LexicalAnalyser.Messages.LEXICAL_ERROR,
+                    1,
+                    invalidSymbol + " " + ScannerConstants.INVALID_SYMBOL);
 
             assertOutputToBe(
                     errorMessage, invalidSymbol);
@@ -123,10 +120,7 @@ public class LexicalAnalysisTest {
                     @
                     """;
 
-            String errorMessage = String.format("%slinha 2: %s %s",
-                    LexicalAnalysis.Messages.LEXICAL_ERROR,
-                    "@",
-                    ScannerConstants.INVALID_SYMBOL);
+            String errorMessage = String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 2, "@ " + ScannerConstants.INVALID_SYMBOL);
 
             assertOutputToBe(
                     errorMessage, invalidSymbol);
@@ -141,13 +135,10 @@ public class LexicalAnalysisTest {
         void shouldThrowForInvalidReservedWord() {
             String invalidReservedWords =
                     """
-                    do
+                    do <-- is not a reserved word
                     """;
 
-            String errorMessage = String.format("%slinha 1: %s %s",
-                    LexicalAnalysis.Messages.LEXICAL_ERROR,
-                    "do",
-                    ScannerConstants.INVALID_RESERVED_WORD);
+            String errorMessage = String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 1, "do " +  ScannerConstants.INVALID_RESERVED_WORD);
 
             assertOutputToBe(errorMessage, invalidReservedWords);
         }
@@ -157,7 +148,7 @@ public class LexicalAnalysisTest {
         void shouldPassForBooleanOperators() {
             String booleanOperators =
                     """
-                    && ||
+                    && || && || && &&
                     """;
 
             assertThatWasCompiledSuccessfully(booleanOperators);
@@ -180,12 +171,11 @@ public class LexicalAnalysisTest {
 
         @Test
         void shouldThrowForInvalidIdentifier() {
-            String invalidIdentifier = "i_1";
+            String invalidIdentifier = """
+                    i_1
+                    """;
 
-            String errorMessage = String.format("%slinha 1: %s %s",
-                    LexicalAnalysis.Messages.LEXICAL_ERROR,
-                    "i_1",
-                    ScannerConstants.INVALID_IDENTIFIER);
+            String errorMessage = String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 1, "i_1 " + ScannerConstants.INVALID_IDENTIFIER);
 
             assertOutputToBe(errorMessage, invalidIdentifier);
         }
@@ -195,10 +185,7 @@ public class LexicalAnalysisTest {
         void shouldThrowForInvalidIdentifierWithTwoOrMoreChars() {
             String invalidIdentifier = "i_1123123123123123";
 
-            String errorMessage = String.format("%slinha 1: %s %s",
-                    LexicalAnalysis.Messages.LEXICAL_ERROR,
-                    "i_1",
-                    ScannerConstants.INVALID_IDENTIFIER);
+            String errorMessage = String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 1, "i_1 " + ScannerConstants.INVALID_IDENTIFIER);
 
             assertOutputToBe(errorMessage, invalidIdentifier);
         }
@@ -236,9 +223,29 @@ public class LexicalAnalysisTest {
                     @<
                     """;
 
-            String errorMessage = String.format("%slinha 3: %s",
-                    LexicalAnalysis.Messages.LEXICAL_ERROR,
-                    ScannerConstants.INVALID_BLOCK_COMENT);
+            String errorMessage = String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 3, ScannerConstants.INVALID_BLOCK_COMENT);
+
+            assertOutputToBe(errorMessage, invalidBlockComment);
+        }
+
+        @Test
+        void shouldThrowForInvalidBlockCommentAfterValidOne() {
+            String invalidBlockComment =
+                    """
+                    >@
+                    test
+                    test
+                    test
+                    @<
+                    
+                    >@
+                    test
+                    test
+                    test@
+                    @<
+                    """;
+
+            String errorMessage = String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 7, ScannerConstants.INVALID_BLOCK_COMENT);
 
             assertOutputToBe(errorMessage, invalidBlockComment);
         }
@@ -282,6 +289,32 @@ public class LexicalAnalysisTest {
         assertThatWasCompiledSuccessfully(validSourceCode);
     }
 
+    @Test
+    void shouldThrowWithInvalidSourceCode() {
+        String invalidSourceCode =
+                """                
+                b_booleanTouF
+                
+                1,0
+                2,0
+                1124124
+                
+                >@
+                this is a invalid block comment
+                
+                test
+                
+                test
+                
+                @ <-- error here
+                @<
+                """;
+
+        String errorMessage = String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, 7, ScannerConstants.INVALID_BLOCK_COMENT);
+
+        assertOutputToBe(errorMessage, invalidSourceCode);
+    }
+
     private void assertOutputToBe(String expectedOutput, String sourceCode) {
         String out = lexical.run(sourceCode);
 
@@ -289,6 +322,6 @@ public class LexicalAnalysisTest {
     }
 
     private void assertThatWasCompiledSuccessfully(String invalidSymbolInsideString) {
-        assertOutputToBe(LexicalAnalysis.Messages.PROGRAM_COMPILED, invalidSymbolInsideString);
+        assertOutputToBe(LexicalAnalyser.Messages.PROGRAM_COMPILED, invalidSymbolInsideString);
     }
 }

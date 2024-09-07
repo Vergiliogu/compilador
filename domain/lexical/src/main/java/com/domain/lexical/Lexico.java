@@ -2,86 +2,100 @@ package com.domain.lexical;
 
 import java.util.Arrays;
 
-public class Lexico implements Constants {
+public class Lexico {
 
-    private int position;
+    private final String sourceCode;
+
+    private int currentCharPosition;
+
     private int lineNumber = 1;
-    private String input;
+    private int blockCommentStartLineNumber = 0;
 
-    public Lexico(String input) {
-        setInput(input);
-    }
-
-    public void setInput(String input) {
-        this.input = input;
-        setPosition(0);
-    }
-
-    public void setPosition(int pos) {
-        position = pos;
+    public Lexico(String sourceCode) {
+        this.sourceCode = sourceCode;
+        this.currentCharPosition = 0;
     }
 
     public Token nextToken() throws LexicalError {
-        if (!hasInput())
-            return null;
+        if (!hasInput()) return null;
 
-        int start = position;
-
-        char readChar = (char) -1;
-        int state = 0;
-        int lastState = 0;
-        int endState = -1;
+        int start = currentCharPosition;
+        char readChar;
+        int currentState = 0;
+        int previousState = 0;
+        int finalState = -1;
         int end = -1;
 
         while (hasInput()) {
-            lastState = state;
+            previousState = currentState;
             readChar = nextChar();
-            state = nextState(readChar, state);
+            currentState = nextState(readChar, currentState);
 
-            if (state < 0)
-                break;
+            if (currentState < 0) break;
 
-            if (tokenForState(state) >= 0) {
-                endState = state;
-                end = position;
+            if (readChar == '\n') lineNumber++;
+
+            checkForBlockComment(readChar);
+
+            boolean isFinalState = tokenForState(currentState) >= 0;
+
+            if (isFinalState) {
+                finalState = currentState;
+                end = currentCharPosition;
             }
         }
 
-        if (endState < 0 || (endState != state && tokenForState(lastState) == -2)) {
-            String errorToThrow = SCANNER_ERROR[lastState];
+        validateFinalState(finalState, currentState, previousState, start);
 
-            switch (errorToThrow) {
-                case ScannerConstants.INVALID_BLOCK_COMENT, ScannerConstants.INVALID_STRING ->
-                        throw new LexicalError(errorToThrow, lineNumber);
+        return buildToken(finalState, start, end);
+    }
 
-                case ScannerConstants.INVALID_SYMBOL ->
-                        throw new LexicalError(String.format("%s %s", readChar, errorToThrow), lineNumber);
+    private void checkForBlockComment(char currChar) {
+        boolean hasMoreChars = currentCharPosition < sourceCode.length();
+        boolean isBlockCommentStartSeq = currChar == '>' && sourceCode.charAt(currentCharPosition) == '@';
 
-                case ScannerConstants.INVALID_IDENTIFIER ->
-                     throw new LexicalError(String.format("%s %s", input.substring(start, position), errorToThrow), lineNumber);
-            }
+        if (hasMoreChars && isBlockCommentStartSeq)
+                blockCommentStartLineNumber = lineNumber;
+    }
+
+    private void validateFinalState(int finalState, int currentState, int previousState, int start) throws LexicalError {
+        if (finalState < 0 || (finalState != currentState && tokenForState(previousState) == -2))
+            throwErrorForState(previousState, start);
+    }
+
+    private void throwErrorForState(int state, int start) throws LexicalError {
+        String error = ScannerConstants.SCANNER_ERROR[state];
+
+        switch (error) {
+            case ScannerConstants.INVALID_STRING ->
+                    throw new LexicalError(error, lineNumber);
+            case ScannerConstants.INVALID_BLOCK_COMENT ->
+                    throw new LexicalError(error, blockCommentStartLineNumber);
+            case ScannerConstants.INVALID_SYMBOL ->
+                    throw new LexicalError(String.format("%s %s", sourceCode.charAt(currentCharPosition - 1), error), lineNumber);
+            case ScannerConstants.INVALID_IDENTIFIER ->
+                    throw new LexicalError(String.format("%s %s", sourceCode.substring(start, currentCharPosition), error), lineNumber);
         }
+    }
 
-        position = end;
+    private Token buildToken(int finalState, int start, int end) throws LexicalError {
+        currentCharPosition = end;
 
-        int token = tokenForState(endState);
+        int tokenForFinalState = tokenForState(finalState);
 
-        if (token == 0)
+        if (tokenForFinalState == 0)
             return nextToken();
 
-        String lexeme = input.substring(start, end);
-        token = lookupToken(token, lexeme);
+        String lexeme = sourceCode.substring(start, end);
+        int token = lookupToken(tokenForFinalState, lexeme);
 
         validateReservedWord(token, lexeme);
-
-        if (readChar == '\n') lineNumber++;
 
         return new Token(token, lexeme, start);
     }
 
     private void validateReservedWord(int token, String lexeme) throws LexicalError {
-        boolean isReservedWord = token == Constants.t_palavra_reservada;
-
+        boolean isReservedWord = Words.RESERVED_WORD.get() == token;
         boolean invalidReservedWord = Arrays.stream(ScannerConstants.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
 
         if (isReservedWord && invalidReservedWord)
@@ -89,58 +103,57 @@ public class Lexico implements Constants {
     }
 
     private int nextState(char c, int state) {
-        int start = SCANNER_TABLE_INDEXES[state];
-        int end   = SCANNER_TABLE_INDEXES[state + 1] - 1;
+        int start = ScannerConstants.SCANNER_TABLE_INDEXES[state];
+        int end = ScannerConstants.SCANNER_TABLE_INDEXES[state + 1] - 1;
 
         while (start <= end) {
             int half = (start + end) / 2;
-
-            if (SCANNER_TABLE[half][0] == c)
-                return SCANNER_TABLE[half][1];
-            else if (SCANNER_TABLE[half][0] < c)
+            if (ScannerConstants.SCANNER_TABLE[half][0] == c) {
+                return ScannerConstants.SCANNER_TABLE[half][1];
+            } else if (ScannerConstants.SCANNER_TABLE[half][0] < c) {
                 start = half + 1;
-            else
+            } else {
                 end = half - 1;
+            }
         }
 
         return -1;
     }
 
     private int tokenForState(int state) {
-        if (state < 0 || state >= TOKEN_STATE.length)
+        if (state < 0 || state >= ScannerConstants.TOKEN_STATE.length)
             return -1;
 
-        return TOKEN_STATE[state];
+        return ScannerConstants.TOKEN_STATE[state];
     }
 
     public int lookupToken(int base, String key) {
-        int start = SPECIAL_CASES_INDEXES[base];
-        int end   = SPECIAL_CASES_INDEXES[base + 1] - 1;
+        int start = ScannerConstants.SPECIAL_CASES_INDEXES[base];
+        int end = ScannerConstants.SPECIAL_CASES_INDEXES[base + 1] - 1;
 
         while (start <= end) {
             int half = (start + end) / 2;
-            int comp = SPECIAL_CASES_KEYS[half].compareTo(key);
+            int comp = ScannerConstants.SPECIAL_CASES_KEYS[half].compareTo(key);
 
-            if (comp == 0)
-                return SPECIAL_CASES_VALUES[half];
-            else if (comp < 0)
-                start = half+1;
-            else
-                end = half-1;
+            if (comp == 0) {
+                return ScannerConstants.SPECIAL_CASES_VALUES[half];
+            } else if (comp < 0) {
+                start = half + 1;
+            } else {
+                end = half - 1;
+            }
         }
 
         return base;
     }
 
-    private boolean hasInput() {
-        return position < input.length();
-    }
-
     private char nextChar() {
-        if (hasInput())
-            return input.charAt(position++);
+        if (hasInput()) return sourceCode.charAt(currentCharPosition++);
 
         return (char) -1;
     }
-}
 
+    private boolean hasInput() {
+        return currentCharPosition < sourceCode.length();
+    }
+}

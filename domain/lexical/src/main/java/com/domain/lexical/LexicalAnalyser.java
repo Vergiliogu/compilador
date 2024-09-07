@@ -1,6 +1,6 @@
 package com.domain.lexical;
 
-public class LexicalAnalysis {
+public class LexicalAnalyser {
 
     public String run(final String sourceCode) {
         try {
@@ -21,20 +21,17 @@ public class LexicalAnalysis {
 
             return Messages.PROGRAM_COMPILED;
         } catch (LexicalError e) {
-            return Messages.LEXICAL_ERROR + formatError(e);
+            return formatError(e);
         }
     }
 
     private String formatError(LexicalError e) {
-        return String.format("linha %d: %s", e.getPosition(), e.getMessage());
+        return String.format(Messages.LEXICAL_ERROR, e.getLineNumber(), e.getMessage());
     }
 
     public static final class Messages {
 
-        private static final String SUCCESS = "SUCCESS: ";
-        private static final String ERROR = "ERROR: ";
-
-        public static final String PROGRAM_COMPILED = SUCCESS;
-        public static final String LEXICAL_ERROR = ERROR;
+        public static final String PROGRAM_COMPILED = "SUCCESS: ";
+        public static final String LEXICAL_ERROR = "ERROR: linha %d: %s";
     }
 }

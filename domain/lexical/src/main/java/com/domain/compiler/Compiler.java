@@ -1,14 +1,14 @@
 package com.domain.compiler;
 
-import com.domain.lexical.LexicalAnalysis;
+import com.domain.lexical.LexicalAnalyser;
 
 public class Compiler {
 
     public static void main(String[] args) {
-        LexicalAnalysis lexicalAnalysis = new LexicalAnalysis();
+        LexicalAnalyser lexicalAnalyser = new LexicalAnalyser();
 
         String sourceCode = "teste";
 
-        lexicalAnalysis.run(sourceCode);
+        lexicalAnalyser.run(sourceCode);
     }
 }
