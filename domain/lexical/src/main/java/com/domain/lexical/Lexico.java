@@ -47,8 +47,14 @@ public class Lexico implements Constants {
             }
         }
 
-        if (endState < 0 || (endState != state && tokenForState(lastState) == -2))
-            throw new LexicalError(SCANNER_ERROR[lastState], lineNumber);
+        if (endState < 0 || (endState != state && tokenForState(lastState) == -2)) {
+            String errorToThrow = SCANNER_ERROR[lastState];
+
+            if (errorToThrow.equals(ScannerConstants.INVALID_SYMBOL))
+                throw new LexicalError(String.format("%s %s", computedChar, errorToThrow), lineNumber);
+
+            throw new LexicalError(errorToThrow, lineNumber);
+        }
 
         if (computedChar == '\n') lineNumber++;
 

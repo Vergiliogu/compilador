@@ -3,6 +3,8 @@ package com.domain.lexical;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,7 +18,7 @@ public class LexicalAnalysisTest {
     }
 
     @Nested
-    class InvalidStrings {
+    class Strings {
 
         @Test
         void mustThrowForStringWithLineFeed() {
@@ -84,10 +86,46 @@ public class LexicalAnalysisTest {
 
     }
 
+    @Nested
+    class Symbols {
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "{", "[", "}", "]", "\\", "|", ".",
+                "_", "#" ,"$", "@", "^", "&", "`", "~"
+        })
+        void mustThrowForInvalidSymbol(String invalidSymbol) {
+            assertOutputToBe(
+                    String.format("%slinha 1: %s %s", LexicalAnalysis.Messages.LEXICAL_ERROR, invalidSymbol, ScannerConstants.INVALID_SYMBOL), invalidSymbol);
+        }
+
+        @Test
+        void mustPassForInvalidSymbolInsideString() {
+            String invalidSymbolInsideString =
+                    """
+                    "String@"
+                    """;
+
+            assertOutputToBe(LexicalAnalysis.Messages.PROGRAM_COMPILED, invalidSymbolInsideString);
+        }
+
+        @Test
+        void mustThrowLineNumberForInvalidSymbol() {
+            String invalidSymbol =
+                    """
+                    "String"
+                    @
+                    """;
+
+            assertOutputToBe(
+                    String.format("%slinha 2: %s %s", LexicalAnalysis.Messages.LEXICAL_ERROR, "@", ScannerConstants.INVALID_SYMBOL), invalidSymbol);
+        }
+
+    }
+
     private void assertOutputToBe(String expectedOutput, String sourceCode) {
         String out = lexical.run(sourceCode);
 
         assertEquals(expectedOutput, out);
     }
-
 }
