@@ -14,7 +14,7 @@ public class LexicalResponse {
     }
 
     public static LexicalResponse error(String errorMessage) {
-        return new LexicalResponse(true, errorMessage, new LinkedList<>());
+        return new LexicalResponse(false, errorMessage, new LinkedList<>());
     }
 
     private LexicalResponse(boolean success, String message, List<Token> tokens) {
