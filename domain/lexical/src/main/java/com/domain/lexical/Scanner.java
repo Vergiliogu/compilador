@@ -1,6 +1,6 @@
 package com.domain.lexical;
 
-public interface ScannerConstants {
+public interface Scanner {
 
     int[] SCANNER_TABLE_INDEXES = {
             0,

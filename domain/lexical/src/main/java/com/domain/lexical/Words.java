@@ -2,8 +2,8 @@ package com.domain.lexical;
 
 public enum Words {
 
-    EPSILON (0),
-    DOLLAR  (1),
+    EPSILON(0),
+    DOLLAR(1),
     RESERVED_WORD(2),
     MAIN(3),
     END(4),

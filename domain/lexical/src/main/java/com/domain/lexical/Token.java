@@ -4,12 +4,12 @@ public class Token {
 
     private final int id;
     private final String lexeme;
-    private final int position;
+    private final int lineNumber;
 
-    public Token(int id, String lexeme, int position) {
+    public Token(int id, String lexeme, int lineNumber) {
         this.id = id;
         this.lexeme = lexeme;
-        this.position = position;
+        this.lineNumber = lineNumber;
     }
 
     public final int getId() {
@@ -20,7 +20,7 @@ public class Token {
         return lexeme;
     }
 
-    public final int getPosition() {
-        return position;
+    public final int getLineNumber() {
+        return lineNumber;
     }
 }

@@ -13,7 +13,7 @@ public class LexicalAnalyser {
             while ( (t = lexico.nextToken()) != null ) {
                 tokens.append(t.getId()).append(";");
                 tokens.append(t.getLexeme()).append(";");
-                tokens.append(t.getPosition()).append(";");
+                tokens.append(t.getLineNumber()).append(";");
                 tokens.append("\n");
             }
 

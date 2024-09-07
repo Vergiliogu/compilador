@@ -64,16 +64,16 @@ public class Lexico {
     }
 
     private void throwErrorForState(int state, int start) throws LexicalError {
-        String error = ScannerConstants.SCANNER_ERROR[state];
+        String error = Scanner.SCANNER_ERROR[state];
 
         switch (error) {
-            case ScannerConstants.INVALID_STRING ->
+            case Scanner.INVALID_STRING ->
                     throw new LexicalError(error, lineNumber);
-            case ScannerConstants.INVALID_BLOCK_COMENT ->
+            case Scanner.INVALID_BLOCK_COMENT ->
                     throw new LexicalError(error, blockCommentStartLineNumber);
-            case ScannerConstants.INVALID_SYMBOL ->
+            case Scanner.INVALID_SYMBOL ->
                     throw new LexicalError(String.format("%s %s", sourceCode.charAt(currentCharPosition - 1), error), lineNumber);
-            case ScannerConstants.INVALID_IDENTIFIER ->
+            case Scanner.INVALID_IDENTIFIER ->
                     throw new LexicalError(String.format("%s %s", sourceCode.substring(start, currentCharPosition), error), lineNumber);
         }
     }
@@ -91,26 +91,26 @@ public class Lexico {
 
         validateReservedWord(token, lexeme);
 
-        return new Token(token, lexeme, start);
+        return new Token(token, lexeme, lineNumber);
     }
 
     private void validateReservedWord(int token, String lexeme) throws LexicalError {
         boolean isReservedWord = Words.RESERVED_WORD.get() == token;
-        boolean invalidReservedWord = Arrays.stream(ScannerConstants.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
+        boolean invalidReservedWord = Arrays.stream(Scanner.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
 
         if (isReservedWord && invalidReservedWord)
-            throw new LexicalError(String.format("%s %s", lexeme, ScannerConstants.INVALID_RESERVED_WORD), lineNumber);
+            throw new LexicalError(String.format("%s %s", lexeme, Scanner.INVALID_RESERVED_WORD), lineNumber);
     }
 
     private int nextState(char c, int state) {
-        int start = ScannerConstants.SCANNER_TABLE_INDEXES[state];
-        int end = ScannerConstants.SCANNER_TABLE_INDEXES[state + 1] - 1;
+        int start = Scanner.SCANNER_TABLE_INDEXES[state];
+        int end = Scanner.SCANNER_TABLE_INDEXES[state + 1] - 1;
 
         while (start <= end) {
             int half = (start + end) / 2;
-            if (ScannerConstants.SCANNER_TABLE[half][0] == c) {
-                return ScannerConstants.SCANNER_TABLE[half][1];
-            } else if (ScannerConstants.SCANNER_TABLE[half][0] < c) {
+            if (Scanner.SCANNER_TABLE[half][0] == c) {
+                return Scanner.SCANNER_TABLE[half][1];
+            } else if (Scanner.SCANNER_TABLE[half][0] < c) {
                 start = half + 1;
             } else {
                 end = half - 1;
@@ -121,22 +121,22 @@ public class Lexico {
     }
 
     private int tokenForState(int state) {
-        if (state < 0 || state >= ScannerConstants.TOKEN_STATE.length)
+        if (state < 0 || state >= Scanner.TOKEN_STATE.length)
             return -1;
 
-        return ScannerConstants.TOKEN_STATE[state];
+        return Scanner.TOKEN_STATE[state];
     }
 
     public int lookupToken(int base, String key) {
-        int start = ScannerConstants.SPECIAL_CASES_INDEXES[base];
-        int end = ScannerConstants.SPECIAL_CASES_INDEXES[base + 1] - 1;
+        int start = Scanner.SPECIAL_CASES_INDEXES[base];
+        int end = Scanner.SPECIAL_CASES_INDEXES[base + 1] - 1;
 
         while (start <= end) {
             int half = (start + end) / 2;
-            int comp = ScannerConstants.SPECIAL_CASES_KEYS[half].compareTo(key);
+            int comp = Scanner.SPECIAL_CASES_KEYS[half].compareTo(key);
 
             if (comp == 0) {
-                return ScannerConstants.SPECIAL_CASES_VALUES[half];
+                return Scanner.SPECIAL_CASES_VALUES[half];
             } else if (comp < 0) {
                 start = half + 1;
             } else {
