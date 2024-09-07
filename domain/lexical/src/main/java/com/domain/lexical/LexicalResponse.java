@@ -34,4 +34,32 @@ public class LexicalResponse {
     public List<Token> getTokens() {
         return tokens;
     }
+
+    @Override
+    public String toString() {
+        String response =
+                """
+                {
+                    "success": %b,
+                    "message": "%s",
+                    "tokens": [ %s ]
+                }
+                """;
+
+        return response.formatted(success, message, tokensAsJsonList());
+
+    }
+
+    private String tokensAsJsonList() {
+        StringBuilder sb = new StringBuilder();
+
+        Token lastToken = tokens.remove(tokens.size() - 1);
+
+        for (Token t : tokens)
+            sb.append(String.format("%s, ", t));
+
+        sb.append(String.format("%s", lastToken));
+
+        return sb.toString();
+    }
 }

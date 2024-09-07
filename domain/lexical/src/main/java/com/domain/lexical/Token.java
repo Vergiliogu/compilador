@@ -23,4 +23,18 @@ public class Token {
     public final int getLineNumber() {
         return lineNumber;
     }
+
+    @Override
+    public String toString() {
+        String response =
+                """
+                {
+                    "id": "%s",
+                    "lexeme": "%s",
+                    "lineNumber": "%d"
+                }
+                """;
+
+        return response.formatted(id, lexeme, lineNumber);
+    }
 }

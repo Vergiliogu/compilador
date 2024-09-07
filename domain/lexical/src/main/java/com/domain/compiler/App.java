@@ -2,7 +2,6 @@ package com.domain.compiler;
 
 import com.domain.lexical.LexicalAnalyser;
 import com.domain.lexical.LexicalResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +22,7 @@ public class App {
 
             LexicalResponse response = lexicalAnalyser.run();
 
-            String responseAsJson = new ObjectMapper()
-                    .writer()
-                    .withDefaultPrettyPrinter()
-                    .writeValueAsString(response);
-
-            System.out.println(responseAsJson);
+            System.out.println(response);
         } catch (IOException e) {
             System.err.println("File not found for path: " + filePath);
         }

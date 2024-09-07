@@ -5,5 +5,5 @@ domain.iml
 .idea
 
 # build
-lexical/bin
-!lexical/bin/classes/*
+bin
+!bin/classes/*
