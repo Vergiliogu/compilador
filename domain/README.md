@@ -50,19 +50,7 @@ The output follows either of:
 }
 ```
 
-## Usage under a child process
+## Usage with `compile.js`
 
-You can either compile the `App` class again (if changes were made) or just use the `App` version already compiled under [bin folder](lexical/bin/classes/com/domain/compiler/App.class).
-
-Secondly, you must organize your `.js` app to "see" the `App` classpath, for example:
-
-```md
-packages/button
-└── app
-    ├── app.js <-- same root as `App.class`
-    ├── com
-    │   └── domain
-    │       └── compiler
-    │           └── App.class
-  ... other bins down here ...
-```
+The [compile](./compile.js) file is intended to be used with node's child processes in order to execute the compiler under a javascript
+runtime environment. 

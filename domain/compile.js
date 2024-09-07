@@ -1,8 +1,8 @@
 import { exec } from 'child_process';
 
-const javaInstance = 'C:/Users/lemue/.jdks/corretto-17.0.12/bin/java.exe -cp';
+const javaInstance = 'C:/Users/lemue/.jdks/corretto-17.0.12/bin/java.exe';
 
-const classPath = './bin/classes'
+const classPath = '-cp ./bin/classes'
 
 const className = 'com.domain.compiler.App'
 
