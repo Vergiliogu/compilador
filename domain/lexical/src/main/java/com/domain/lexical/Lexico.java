@@ -52,10 +52,17 @@ public class Lexico implements Constants {
         if (endState < 0 || (endState != state && tokenForState(lastState) == -2)) {
             String errorToThrow = SCANNER_ERROR[lastState];
 
-            if (errorToThrow.equals(ScannerConstants.INVALID_SYMBOL))
-                throw new LexicalError(String.format("%s %s", computedChar, errorToThrow), lineNumber);
+            switch (errorToThrow) {
+                case ScannerConstants.INVALID_SYMBOL ->
+                        throw new LexicalError(String.format("%s %s", computedChar, errorToThrow), lineNumber);
 
-            throw new LexicalError(errorToThrow, lineNumber);
+                case ScannerConstants.INVALID_STRING ->
+                        throw new LexicalError(errorToThrow, lineNumber);
+
+                case ScannerConstants.INVALID_IDENTIFIER ->
+                    throw new LexicalError(String.format("%s %s", input.substring(start, position), errorToThrow), lineNumber);
+
+            }
         }
 
 
@@ -69,16 +76,20 @@ public class Lexico implements Constants {
         String lexeme = input.substring(start, end);
         token = lookupToken(token, lexeme);
 
-        boolean isReservedWord = token == Constants.t_palavra_reservada;
-
-        boolean unidentifiedReservedWord = Arrays.stream(ScannerConstants.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
-
-        if (isReservedWord && unidentifiedReservedWord)
-            throw new LexicalError(String.format("%s %s", lexeme, ScannerConstants.INVALID_RESERVED_WORD), lineNumber);
+        validateReservedWord(token, lexeme);
 
         if (computedChar == '\n') lineNumber++;
 
         return new Token(token, lexeme, start);
+    }
+
+    private void validateReservedWord(int token, String lexeme) throws LexicalError {
+        boolean isReservedWord = token == Constants.t_palavra_reservada;
+
+        boolean invalidReservedWord = Arrays.stream(ScannerConstants.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
+
+        if (isReservedWord && invalidReservedWord)
+            throw new LexicalError(String.format("%s %s", lexeme, ScannerConstants.INVALID_RESERVED_WORD), lineNumber);
     }
 
     private int nextState(char c, int state) {

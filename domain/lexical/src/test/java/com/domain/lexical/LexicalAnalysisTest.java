@@ -4,8 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.ArgumentsSources;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -143,15 +141,26 @@ public class LexicalAnalysisTest {
         void shouldThrowForInvalidReservedWord() {
             String invalidReservedWords =
                     """
-                    untill
+                    do
                     """;
 
             String errorMessage = String.format("%slinha 1: %s %s",
                     LexicalAnalysis.Messages.LEXICAL_ERROR,
-                    "untill",
+                    "do",
                     ScannerConstants.INVALID_RESERVED_WORD);
 
             assertOutputToBe(errorMessage, invalidReservedWords);
+        }
+
+
+        @Test
+        void shouldPassForBooleanOperators() {
+            String booleanOperators =
+                    """
+                    && ||
+                    """;
+
+            assertThatWasCompiledSuccessfully(booleanOperators);
         }
 
         @ParameterizedTest
@@ -162,6 +171,52 @@ public class LexicalAnalysisTest {
 
         static Stream<String> specialCasesKeys() {
             return Stream.of(ScannerConstants.SPECIAL_CASES_KEYS);
+        }
+
+    }
+
+    @Nested
+    class Identifiers {
+
+        @Test
+        void shouldThrowForInvalidIdentifier() {
+            String invalidIdentifier = "i_1";
+
+            String errorMessage = String.format("%slinha 1: %s %s",
+                    LexicalAnalysis.Messages.LEXICAL_ERROR,
+                    "i_1",
+                    ScannerConstants.INVALID_IDENTIFIER);
+
+            assertOutputToBe(errorMessage, invalidIdentifier);
+        }
+
+        // TODO: is this correct? or should be the whole id?
+        @Test
+        void shouldThrowForInvalidIdentifierWithTwoOrMoreChars() {
+            String invalidIdentifier = "i_1123123123123123";
+
+            String errorMessage = String.format("%slinha 1: %s %s",
+                    LexicalAnalysis.Messages.LEXICAL_ERROR,
+                    "i_1",
+                    ScannerConstants.INVALID_IDENTIFIER);
+
+            assertOutputToBe(errorMessage, invalidIdentifier);
+        }
+
+        @Test
+        void shouldPassForValidIdentifier() {
+            String validIdentifier =
+                    """
+                    i_int2
+                    s_string
+                    f_float1
+                    b_booleanTouF
+                    i_AaA123
+                    f_a111A
+                    """;
+
+            assertThatWasCompiledSuccessfully(validIdentifier);
+
         }
 
     }

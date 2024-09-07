@@ -1192,8 +1192,8 @@ public interface ScannerConstants {
 
     Object INVALID_RESERVED_WORD = "palavra reservada inválida";
     String INVALID_BLOCK_COMENT = "comentário de bloco inválido ou não finalizado"; // + linha
-    String INVALID_FLOAT = "Erro identificando constante_float";
-    String INVALID_ID = "identificador inválido"; // + linha + sequencia nao reconhecida
+    String INVALID_FLOAT = "constante_float inválida";
+    String INVALID_IDENTIFIER = "identificador inválido"; // + linha + sequencia nao reconhecida
     String INVALID_STRING = "constante_string inválida"; // + linha
     String INVALID_SYMBOL = "símbolo inválido"; // + linha + sequencia nao reconhecida
 
@@ -1202,7 +1202,6 @@ public interface ScannerConstants {
         "",
         "",
         INVALID_STRING,
-        "Erro identificando \"&&\"",
         "",
         "",
         "",
@@ -1221,7 +1220,8 @@ public interface ScannerConstants {
         "",
         "",
         "",
-        "Erro identificando \"||\"",
+        "",
+        "",
         "",
         "",
         INVALID_STRING,
@@ -1229,7 +1229,7 @@ public interface ScannerConstants {
         INVALID_FLOAT,
         "",
         INVALID_BLOCK_COMENT,
-        INVALID_ID,
+            INVALID_IDENTIFIER,
         "",
         "",
         INVALID_BLOCK_COMENT,
