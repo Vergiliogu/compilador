@@ -2,8 +2,8 @@ package com.domain.lexical;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.List;
 
 public class App {
 
@@ -13,9 +13,11 @@ public class App {
         File file = new File(filePath);
 
         try {
-            String fileContent = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+            List<String> fileContent = Files.readAllLines(file.toPath());
 
-            Lexico lexico = new Lexico(fileContent);
+            String joinedLineFeed = String.join("\n", fileContent);
+
+            Lexico lexico = new Lexico(joinedLineFeed);
         
             Token t;
 
