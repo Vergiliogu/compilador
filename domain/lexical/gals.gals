@@ -1,0 +1,63 @@
+#Options
+GenerateScanner = true
+GenerateParser = false
+Language = Java
+ScannerName = Lexico
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = String
+#RegularDefinitions
+minu: [a-z]
+mai: [A-Z]
+letra: {minu} | {mai}
+d: [0-9]
+int: 0 | ([1-9]{d}*)
+prefixos: i_ | f_ | s_ | b_
+id_p1: {mai}
+id_p2: {minu}|{mai}({minu}|{d})
+id_p3: ({minu}|{d}|{mai}({d}|{minu}))*
+
+#Tokens
+palavra_reservada: {minu}{letra}*
+
+pr_main = palavra_reservada: "main"
+pr_end = palavra_reservada: "end"
+pr_if = palavra_reservada: "if"
+pr_elif = palavra_reservada: "elif"
+pr_else = palavra_reservada: "else"
+pr_false = palavra_reservada: "false"
+pr_true = palavra_reservada: "true"
+pr_read = palavra_reservada: "read"
+pr_write = palavra_reservada: "write"
+pr_writeln = palavra_reservada: "writeln"
+pr_repeat = palavra_reservada: "repeat"
+pr_until = palavra_reservada: "until"
+pr_while  = palavra_reservada: "while"
+
+
+id:!{prefixos}({id_p1}|({id_p2}{id_p3}{mai}?))
+
+constante_int: {int}
+constante_float: {int}","(0 | {d}*[1-9])
+constante_string: \"([^\n\""%"] | "%"x)*\"
+
+:! ">@"\n[^"@"]*\n"@<"
+
+"&&"
+"||"
+"!"
+"=="
+"!="
+"<"
+">"
+"+"
+"-"
+"*"
+"/"
+","
+";"
+"="
+"("
+")"
+
+:[\s\n\t]
