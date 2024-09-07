@@ -1,7 +1,8 @@
+package com.domain.lexical;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.charset.Charset;
 import java.nio.charset.Charset;
 
 public class App {

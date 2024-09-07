@@ -1,3 +1,5 @@
+package com.domain.lexical;
+
 public class Lexico implements Constants
 {
     private int position;
@@ -55,7 +57,7 @@ public class Lexico implements Constants
             }
         }
         if (endState < 0 || (endState != state && tokenForState(lastState) == -2))
-            throw new LexicalError(SCANNER_ERROR[lastState], start, " | " + start + " " + end + " | "); // TODO: pass lexeme
+            throw new LexicalError(ScannerConstants.SCANNER_ERROR[lastState], start, " | " + start + " " + end + " | "); // TODO: pass lexeme
 
         position = end;
 
@@ -68,8 +70,8 @@ public class Lexico implements Constants
             String lexeme = input.substring(start, end);
             token = lookupToken(token, lexeme);
 
-            if (token == t_palavra_reservada)
-                throw new LexicalError(SCANNER_ERROR[lastState], start, lexeme);
+            if (token == Constants.t_palavra_reservada)
+                throw new LexicalError(ScannerConstants.SCANNER_ERROR[lastState], start, lexeme);
                 
             return new Token(token, lexeme, start);
         }
@@ -77,16 +79,16 @@ public class Lexico implements Constants
 
     private int nextState(char c, int state)
     {
-        int start = SCANNER_TABLE_INDEXES[state];
-        int end   = SCANNER_TABLE_INDEXES[state+1]-1;
+        int start = ScannerConstants.SCANNER_TABLE_INDEXES[state];
+        int end   = ScannerConstants.SCANNER_TABLE_INDEXES[state+1]-1;
 
         while (start <= end)
         {
             int half = (start+end)/2;
 
-            if (SCANNER_TABLE[half][0] == c)
-                return SCANNER_TABLE[half][1];
-            else if (SCANNER_TABLE[half][0] < c)
+            if (ScannerConstants.SCANNER_TABLE[half][0] == c)
+                return ScannerConstants.SCANNER_TABLE[half][1];
+            else if (ScannerConstants.SCANNER_TABLE[half][0] < c)
                 start = half+1;
             else  //(SCANNER_TABLE[half][0] > c)
                 end = half-1;
@@ -97,24 +99,24 @@ public class Lexico implements Constants
 
     private int tokenForState(int state)
     {
-        if (state < 0 || state >= TOKEN_STATE.length)
+        if (state < 0 || state >= ScannerConstants.TOKEN_STATE.length)
             return -1;
 
-        return TOKEN_STATE[state];
+        return ScannerConstants.TOKEN_STATE[state];
     }
 
     public int lookupToken(int base, String key)
     {
-        int start = SPECIAL_CASES_INDEXES[base];
-        int end   = SPECIAL_CASES_INDEXES[base+1]-1;
+        int start = ScannerConstants.SPECIAL_CASES_INDEXES[base];
+        int end   = ScannerConstants.SPECIAL_CASES_INDEXES[base+1]-1;
 
         while (start <= end)
         {
             int half = (start+end)/2;
-            int comp = SPECIAL_CASES_KEYS[half].compareTo(key);
+            int comp = ScannerConstants.SPECIAL_CASES_KEYS[half].compareTo(key);
 
             if (comp == 0)
-                return SPECIAL_CASES_VALUES[half];
+                return ScannerConstants.SPECIAL_CASES_VALUES[half];
             else if (comp < 0)
                 start = half+1;
             else  //(comp > 0)

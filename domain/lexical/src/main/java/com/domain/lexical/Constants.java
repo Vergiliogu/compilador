@@ -1,3 +1,5 @@
+package com.domain.lexical;
+
 public interface Constants extends ScannerConstants
 {
     int EPSILON  = 0;

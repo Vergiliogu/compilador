@@ -1,3 +1,5 @@
+package com.domain.lexical;
+
 public class LexicalError extends AnalysisError
 {
     public LexicalError(String msg, int position, String lexeme)

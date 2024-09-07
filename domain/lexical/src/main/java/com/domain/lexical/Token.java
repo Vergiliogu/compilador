@@ -1,3 +1,5 @@
+package com.domain.lexical;
+
 public class Token
 {
     private int id;
