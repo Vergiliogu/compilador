@@ -5,3 +5,7 @@ domain.iml
 # intellij
 
 .idea
+
+# build
+
+lexical/bin
