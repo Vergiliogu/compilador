@@ -1,37 +1,34 @@
 package com.domain.lexical;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class LexicalAnalyser {
 
-    public String run(final String sourceCode) {
+    public LexicalResponse run(final String sourceCode) {
         try {
             Lexico lexico = new Lexico(sourceCode);
 
             Token t;
 
-            StringBuilder tokens = new StringBuilder();
+            List<Token> tokens = new LinkedList<>();
 
-            while ( (t = lexico.nextToken()) != null ) {
-                tokens.append(t.getId()).append(";");
-                tokens.append(t.getLexeme()).append(";");
-                tokens.append(t.getLineNumber()).append(";");
-                tokens.append("\n");
-            }
+            while ( (t = lexico.nextToken()) != null )
+                tokens.add(t);
 
-            // Store tokens at a file and pass SUCCESS: Tokens at: file
-
-            return Messages.PROGRAM_COMPILED;
+            return LexicalResponse.success(Messages.PROGRAM_COMPILED, tokens);
         } catch (LexicalError e) {
-            return formatError(e);
+            return LexicalResponse.error(formatAsErrorMessage(e));
         }
     }
 
-    private String formatError(LexicalError e) {
+    private String formatAsErrorMessage(LexicalError e) {
         return String.format(Messages.LEXICAL_ERROR, e.getLineNumber(), e.getMessage());
     }
 
     public static final class Messages {
 
-        public static final String PROGRAM_COMPILED = "SUCCESS: ";
+        public static final String PROGRAM_COMPILED = "SUCCESS: Tokens created";
         public static final String LEXICAL_ERROR = "ERROR: linha %d: %s";
     }
 }

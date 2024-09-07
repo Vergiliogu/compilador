@@ -352,7 +352,7 @@ public class LexicalAnalyserTest {
     }
 
     private void assertOutputToBe(String expectedOutput, String sourceCode) {
-        String out = lexical.run(sourceCode);
+        String out = lexical.run(sourceCode).getMessage();
 
         assertEquals(expectedOutput, out);
     }

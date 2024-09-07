@@ -2,7 +2,7 @@ package com.domain.compiler;
 
 import com.domain.lexical.LexicalAnalyser;
 
-public class Compiler {
+public class App {
 
     public static void main(String[] args) {
         LexicalAnalyser lexicalAnalyser = new LexicalAnalyser();
