@@ -21,24 +21,22 @@ public class Lexico implements Constants {
         position = pos;
     }
 
-    public Token nextToken() throws LexicalError
-    {
-        if ( ! hasInput() )
+    public Token nextToken() throws LexicalError {
+        if (!hasInput())
             return null;
 
         int start = position;
 
-        char computedChar = (char) -1;
+        char readChar = (char) -1;
         int state = 0;
         int lastState = 0;
         int endState = -1;
         int end = -1;
 
-        while (hasInput())
-        {
+        while (hasInput()) {
             lastState = state;
-            computedChar = nextChar();
-            state = nextState(computedChar, state);
+            readChar = nextChar();
+            state = nextState(readChar, state);
 
             if (state < 0)
                 break;
@@ -57,13 +55,12 @@ public class Lexico implements Constants {
                         throw new LexicalError(errorToThrow, lineNumber);
 
                 case ScannerConstants.INVALID_SYMBOL ->
-                        throw new LexicalError(String.format("%s %s", computedChar, errorToThrow), lineNumber);
+                        throw new LexicalError(String.format("%s %s", readChar, errorToThrow), lineNumber);
 
                 case ScannerConstants.INVALID_IDENTIFIER ->
                      throw new LexicalError(String.format("%s %s", input.substring(start, position), errorToThrow), lineNumber);
             }
         }
-
 
         position = end;
 
@@ -77,7 +74,7 @@ public class Lexico implements Constants {
 
         validateReservedWord(token, lexeme);
 
-        if (computedChar == '\n') lineNumber++;
+        if (readChar == '\n') lineNumber++;
 
         return new Token(token, lexeme, start);
     }
