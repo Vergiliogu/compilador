@@ -13,13 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LexicalAnalyserTest {
 
-    private LexicalAnalyser lexical;
-
-    @BeforeEach
-    void setup() {
-        lexical = new LexicalAnalyser();
-    }
-
     @Nested
     class Strings {
 
@@ -352,13 +345,13 @@ public class LexicalAnalyserTest {
     }
 
     private void assertOutputToBe(String expectedOutput, String sourceCode) {
-        String out = lexical.run(sourceCode).getMessage();
+        String out = new LexicalAnalyser(sourceCode).run().getMessage();
 
         assertEquals(expectedOutput, out);
     }
 
     private void assertThatWasCompiledSuccessfully(String invalidSymbolInsideString) {
-        assertOutputToBe(LexicalAnalyser.Messages.PROGRAM_COMPILED, invalidSymbolInsideString);
+        assertOutputToBe(LexicalAnalyser.PROGRAM_COMPILED_MESSAGE, invalidSymbolInsideString);
     }
 
     private static final class Error {
@@ -380,7 +373,7 @@ public class LexicalAnalyserTest {
         }
 
         public String build() {
-            return String.format(LexicalAnalyser.Messages.LEXICAL_ERROR, lineNumber, message);
+            return String.format(LexicalAnalyser.LEXICAL_ERROR_MESSAGE, lineNumber, message);
         }
     }
 }
