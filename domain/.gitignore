@@ -1,11 +1,9 @@
 # project
-
 domain.iml
 
 # intellij
-
 .idea
 
 # build
-
 lexical/bin
+!lexical/bin/classes/*
