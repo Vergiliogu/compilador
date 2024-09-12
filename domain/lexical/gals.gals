@@ -1,11 +1,14 @@
 #Options
 GenerateScanner = true
-GenerateParser = false
+GenerateParser = true
 Language = Java
 ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
 ScannerCaseSensitive = true
 ScannerTable = Compact
-Input = String
+Input = Stream
+Parser = SLR
 #RegularDefinitions
 minu: [a-z]
 mai: [A-Z]
@@ -18,6 +21,8 @@ id_p2: {minu}|{mai}({minu}|{d})
 id_p3: ({minu}|{d}|{mai}({d}|{minu}))*
 
 #Tokens
+// Gustavo Vergilio Poleza | Lemuel Manske | João Henrique
+
 palavra_reservada: {minu}{letra}*
 
 pr_main = palavra_reservada: "main"
@@ -61,3 +66,105 @@ constante_string: \"([^\n\""%"] | "%"x)*\"
 ")"
 
 :[\s\n\t]
+#NonTerminals
+<programa>
+
+<lista_instr>
+
+<instrucao>
+
+<declaracao_var>
+
+<lista_id>
+
+<comando>
+
+<atribuicao>
+
+<input>
+
+<output>
+
+<selecao>
+
+<repeticao>
+
+<expressao>
+
+<lista_inputs>
+
+<inicio_input>
+
+<lista_expr>
+
+<lista_comandos>
+
+<if>
+
+<elif>
+
+<else>
+
+<repeat_while>
+
+<repeat_until>
+
+// >
+#Grammar
+<programa> ::= pr_main <lista_instr> pr_end ;
+
+<lista_instr> ::= <instrucao>";" | <instrucao>";" <lista_instr> ;
+
+<instrucao> ::= <declaracao_var> | <comando> ;
+
+<declaracao_var> ::= <lista_id> ;
+
+<comando> ::= <atribuicao> | <input> | <output> | <selecao> | <repeticao> ;
+
+<atribuicao> ::= <lista_id> "=" <expressao> ;
+
+
+
+<input> ::= pr_read "(" <lista_inputs> ")" ;
+
+<lista_inputs> ::= <inicio_input> <lista_id> | <inicio_input> <lista_id>";" <lista_inputs> ;
+
+<inicio_input> ::= constante_string "," | î ;
+
+
+
+<output> ::= pr_write "(" <lista_expr> ")" | pr_writeln "(" <lista_expr> ")" ;
+
+
+
+<selecao> ::= <if> <elif> <else> ;
+
+<if> ::= pr_if <expressao> <lista_comandos> ;
+
+<elif> ::= î | pr_elif <expressao> <lista_comandos> <elif> ;
+
+<else> ::= <lista_comandos> pr_end | î ;
+
+
+
+<repeticao> ::= <repeat_while> | <repeat_until> ;
+
+<repeat_while> ::= pr_repeat <lista_comandos> pr_while <expressao> ;
+
+<repeat_until> ::= pr_repeat <lista_comandos> pr_until <expressao> ;
+
+
+// utilitarios
+
+
+<lista_comandos> ::= <comando> | <comando> <lista_comandos> ;
+
+<lista_expr> ::= <expressao> | <expressao>"," <lista_expr> ;
+
+<lista_id> ::= id | id"," <lista_id> ;
+
+// <expressao>
+
+
+
+
