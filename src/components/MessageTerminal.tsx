@@ -43,7 +43,7 @@ export const MessageTerminal = () => {
       />
 
       <div className="w-full h-full overflow-scroll">
-        <p className="w-full h-full bg-transparent p-2">
+        <p className="w-full h-full bg-transparent p-2 font-mono">
           {terminalMessage}
         </p>
       </div>

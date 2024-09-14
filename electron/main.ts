@@ -2,6 +2,8 @@ import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { readFileSync, writeFileSync, accessSync, constants } from 'node:fs';
+import { exec } from 'node:child_process';
+import util from 'node:util';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -22,11 +24,13 @@ function createWindow() {
     minHeight: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
-      devTools: false, // Disable DevTools
+      devTools: true, // Disable DevTools
       contextIsolation: true, // Ensures security when exposing APIs
       nodeIntegration: false, // Ensures no direct access to Node APIs
     },
   });
+
+  win.webContents.openDevTools();
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
@@ -89,6 +93,40 @@ ipcMain.handle('read-file', async (_event: unknown, filePath: string) => {
   } catch (error: any) {
     console.error('Error reading file:', error);
     return null; // Return null in case of an error
+  }
+});
+
+ipcMain.handle('write-lexical-file', async (_event, content: string) => {
+  const filePath = path.join(process.env.APP_ROOT, 'domain/resources/source-code.txt');
+
+  try {
+    writeFileSync(filePath, content, 'utf-8');
+    return { success: true, filePath };
+  } catch (error) {
+    console.error('Error saving file:', error);
+    return { success: false, error };
+  }
+});
+
+const execPromise = util.promisify(exec);
+
+ipcMain.handle('run-lexical', async () => {
+  const sourceCodeFile = path.join(process.env.APP_ROOT, 'domain/resources/source-code.txt');
+  const classPath = `-cp ${path.join(process.env.APP_ROOT, 'domain/lexical/bin/classes')}`
+  const className = 'com.domain.compiler.App'
+
+  try {
+    const { stderr, stdout } = await execPromise(`java ${classPath} ${className} ${sourceCodeFile}`);
+
+    if (stderr) {
+      console.error('Error running lexical:', stderr);
+      return { success: false, error: stderr };
+    }
+
+    return { success: true, output: stdout };
+  } catch (error) {
+    console.error('Error running lexical:', error);
+    return { success: false, error };
   }
 });
 
