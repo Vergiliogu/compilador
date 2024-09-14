@@ -140,7 +140,7 @@ public class LexicalAnalyserTest {
     }
 
     @Nested
-    class ReservedWords {
+    class ReservedWord {
 
         @Test
         void shouldThrowForInvalidReservedWord() {

@@ -117,7 +117,7 @@ public class LexicalAnalyser {
     }
 
     private void validateReservedWord(int token, String lexeme) throws LexicalError {
-        boolean isReservedWord = Words.RESERVED_WORD.get() == token;
+        boolean isReservedWord = Word.RESERVED_WORD.getId() == token;
         boolean invalidReservedWord = Arrays.stream(Scanner.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
 
         if (isReservedWord && invalidReservedWord)

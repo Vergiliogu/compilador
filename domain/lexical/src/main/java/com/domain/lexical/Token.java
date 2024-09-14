@@ -2,18 +2,18 @@ package com.domain.lexical;
 
 public class Token {
 
-    private final int id;
+    private final Word word;
     private final String lexeme;
     private final int lineNumber;
 
     public Token(int id, String lexeme, int lineNumber) {
-        this.id = id;
+        this.word = Word.fromId(id);
         this.lexeme = lexeme;
         this.lineNumber = lineNumber;
     }
 
-    public final int getId() {
-        return id;
+    public final Word getWord() {
+        return word;
     }
 
     public final String getLexeme() {
@@ -35,6 +35,6 @@ public class Token {
                 }
                 """;
 
-        return response.formatted(id, lexeme, lineNumber);
+        return response.formatted(word.getWord(), lexeme, lineNumber);
     }
 }
