@@ -28,4 +28,6 @@ contextBridge.exposeInMainWorld('electron', {
   openSaveFileDialog: (content: string) => ipcRenderer.invoke('save-file-dialog', content),
   readFile: (filePath: string) => ipcRenderer.invoke('read-file', filePath),
   writeFile: (filePath: string, content: string) => ipcRenderer.invoke('write-file', filePath, content),
+  writeLexicalFile: (content: string) => ipcRenderer.invoke('write-lexical-file', content),
+  runLexical: () => ipcRenderer.invoke('run-lexical'),
 });

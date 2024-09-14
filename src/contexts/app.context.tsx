@@ -1,4 +1,5 @@
 import { createContext, PropsWithChildren, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { convertToHTMLSafe, createLexicalTable } from "../utils/string.utils";
 
 interface AppContextType {
   terminalMessage?: ReactNode;
@@ -74,9 +75,24 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
     }
   }, [editorText, loadedFileMetaData])
 
-  const handleCompile = useCallback(() => {
-    setTerminalMessage('Compilação de programas ainda não foi implementada.')
-  }, [])
+  const handleCompile = useCallback(async () => {
+    const { success } = await window.electron.writeLexicalFile(editorText);
+
+    if (success) {
+      const lexical = await window.electron.runLexical();
+      if (lexical.success) {
+        const lexicalTable = createLexicalTable(JSON.parse(lexical.output).tokens);
+        const htmlLexicalTable = convertToHTMLSafe(lexicalTable)
+
+        setTerminalMessage(<span dangerouslySetInnerHTML={{ __html: htmlLexicalTable }} />);
+      } else {
+        console.error(lexical.error);
+        setTerminalMessage('Não foi possível compilar o código.');
+      }
+    } else {
+      setTerminalMessage('Não foi possível compilar o código.');
+    }
+  }, [editorText])
 
   const handleShowTeam = useCallback(() => {
     setTerminalMessage(
@@ -90,7 +106,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
 
   const handleCopyToClipboard = useCallback(async () => {
     if (!editorRef.current) return;
-    
+
     const start = editorRef.current.selectionStart;
     const end = editorRef.current.selectionEnd;
     const selectedText = editorRef.current.value.substring(start, end);
