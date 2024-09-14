@@ -53,6 +53,8 @@ public class LexicalResponse {
     private String tokensAsJsonList() {
         StringBuilder sb = new StringBuilder();
 
+        if (tokens.isEmpty()) return "";
+
         Token lastToken = tokens.remove(tokens.size() - 1);
 
         for (Token t : tokens)
