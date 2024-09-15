@@ -8,3 +8,4 @@ domain.iml
 /bin/*
 !/bin/classes/
 /bin/classes/*
+/bin/test-classes/*
