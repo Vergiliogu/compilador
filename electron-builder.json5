@@ -3,7 +3,7 @@
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "YourAppID",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "Compilador",
   "directories": {
     "output": "release/${version}"
   },
@@ -39,5 +39,12 @@
       "AppImage"
     ],
     "artifactName": "${productName}-Linux-${version}.${ext}"
-  }
+  },
+  "extraResources": [
+    {
+      "from": "domain/",
+      "to": "domain",
+      "filter": ["**/*"]
+    }
+  ],
 }

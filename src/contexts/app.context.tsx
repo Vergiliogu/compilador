@@ -77,20 +77,20 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
 
   const handleCompile = useCallback(async () => {
     const { success } = await window.electron.writeLexicalFile(editorText);
+    if (!success) return setTerminalMessage('Não foi possível compilar o código. 1');
 
-    if (success) {
-      const lexical = await window.electron.runLexical();
-      if (lexical.success) {
-        const lexicalTable = createLexicalTable(JSON.parse(lexical.output).tokens);
-        const htmlLexicalTable = convertToHTMLSafe(lexicalTable)
+    const lexical = await window.electron.runLexical();
+    if (!lexical.success) return setTerminalMessage('Não foi possível compilar o código. 2');
+    
+    const parsedOutput = JSON.parse(lexical.output);
 
-        setTerminalMessage(<span dangerouslySetInnerHTML={{ __html: htmlLexicalTable }} />);
-      } else {
-        console.error(lexical.error);
-        setTerminalMessage('Não foi possível compilar o código.');
-      }
+    if (parsedOutput.success) {
+      const lexicalTable = createLexicalTable(parsedOutput.tokens);
+      const htmlLexicalTable = convertToHTMLSafe(lexicalTable)
+
+      setTerminalMessage(<span dangerouslySetInnerHTML={{ __html: htmlLexicalTable }} />);
     } else {
-      setTerminalMessage('Não foi possível compilar o código.');
+      setTerminalMessage(parsedOutput.message.replace('ERROR: ', ''));
     }
   }, [editorText])
 

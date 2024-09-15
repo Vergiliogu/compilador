@@ -1,9 +1,11 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { readFileSync, writeFileSync, accessSync, constants } from 'node:fs';
+import { accessSync, constants } from 'node:fs';
+import { writeFile, readFile } from 'node:fs/promises';
 import { exec } from 'node:child_process';
 import util from 'node:util';
+import { tmpdir } from 'node:os';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -64,7 +66,7 @@ ipcMain.handle('save-file-dialog', async (_event, content: string) => {
 
   if (filePath) {
     try {
-      writeFileSync(filePath, content, 'utf-8');
+      await writeFile(filePath, content, 'utf-8');
       return { success: true, filePath };
     } catch (error) {
       console.error('Error saving file:', error);
@@ -78,7 +80,7 @@ ipcMain.handle('save-file-dialog', async (_event, content: string) => {
 ipcMain.handle('write-file', async (_event, filePath: string, content: string) => {
   try {
     accessSync(filePath, constants.W_OK);
-    writeFileSync(filePath, content, 'utf-8');
+    await writeFile(filePath, content, 'utf-8');
     return { success: true, filePath };
   } catch (error) {
     console.error('Error saving file:', error);
@@ -88,7 +90,7 @@ ipcMain.handle('write-file', async (_event, filePath: string, content: string) =
 
 ipcMain.handle('read-file', async (_event: unknown, filePath: string) => {
   try {
-    const data = readFileSync(filePath, 'utf-8'); // Read file content
+    const data = await readFile(filePath, 'utf-8');
     return data; // Return file content
   } catch (error: any) {
     console.error('Error reading file:', error);
@@ -97,10 +99,10 @@ ipcMain.handle('read-file', async (_event: unknown, filePath: string) => {
 });
 
 ipcMain.handle('write-lexical-file', async (_event, content: string) => {
-  const filePath = path.join(process.env.APP_ROOT, 'domain/resources/source-code.txt');
+  const filePath = path.join(tmpdir(), 'source-code.txt');
 
   try {
-    writeFileSync(filePath, content, 'utf-8');
+    await writeFile(filePath, content, 'utf-8');
     return { success: true, filePath };
   } catch (error) {
     console.error('Error saving file:', error);
@@ -111,8 +113,15 @@ ipcMain.handle('write-lexical-file', async (_event, content: string) => {
 const execPromise = util.promisify(exec);
 
 ipcMain.handle('run-lexical', async () => {
-  const sourceCodeFile = path.join(process.env.APP_ROOT, 'domain/resources/source-code.txt');
-  const classPath = `-cp ${path.join(process.env.APP_ROOT, 'domain/lexical/bin/classes')}`
+  let appPath: string;
+  if (process.env.NODE_ENV === 'development')
+    appPath = process.env.APP_ROOT
+  else {
+    appPath = path.join(app.getAppPath(), '..')
+  }
+
+  const sourceCodeFile = path.join(tmpdir(), 'source-code.txt');
+  const classPath = `-cp ${path.join(appPath, 'domain', 'lexical', 'bin', 'classes')}`
   const className = 'com.domain.compiler.App'
 
   try {
