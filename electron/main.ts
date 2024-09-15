@@ -125,7 +125,10 @@ ipcMain.handle('run-lexical', async () => {
   const className = 'com.domain.compiler.App'
 
   try {
-    const { stderr, stdout } = await execPromise(`java ${classPath} ${className} ${sourceCodeFile}`);
+    const { stderr, stdout } = await execPromise(
+      `java ${classPath} ${className} ${sourceCodeFile}`,
+      { encoding: 'latin1' }
+    );
 
     if (stderr) {
       console.error('Error running lexical:', stderr);
