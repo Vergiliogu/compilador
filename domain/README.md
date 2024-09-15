@@ -49,8 +49,3 @@ The output follows either of:
   } ]
 }
 ```
-
-## Usage with `compile.js`
-
-The [compile](./compile.js) file is intended to be used with node's child processes in order to execute the compiler under a javascript
-runtime environment. 
