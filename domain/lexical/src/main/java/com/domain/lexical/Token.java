@@ -35,6 +35,6 @@ public class Token {
                 }
                 """;
 
-        return response.formatted(word.getWord(), lexeme, lineNumber);
+        return response.formatted(word.getWord(), lexeme.replace("\"", ""), lineNumber);
     }
 }
