@@ -11,6 +11,8 @@ export const createLexicalTable = (tokens: Token[]): string => {
     table += `${addSpacesAtTheEnd(token.lineNumber, 10)}${addSpacesAtTheEnd(token.id, 20)}${token.lexeme}\n`;
   });
 
+  table += addSpacesAtTheEnd('', 10) + "programa compilado com sucesso"
+
   return table;
 }
 
