@@ -1,0 +1,68 @@
+IMPLEMENTAÇÃO
+1) alterar especificação sintática conforme correção do trabalho no.3
+ 
+2) setar opções (em Ferramentas > Opções): 
+   2.1 aba GERAL
+       -> selecionar Analisador Léxico e Sintático, escolher linguagem
+
+  2.2 aba LÉXICO
+      -> Forma de Entrada: String
+      -> Implementação do Autômato: Tabela Compactada 
+
+  2.3 aba SINTÁTICO
+      -> Classe do analisador sintático: LL(1)
+
+3) gerar código (em Ferramentas > Gerar Código): escolher pasta, gerar todos os arquivos
+	
+4) como usar o código gerado, deve ser chamado a partir da ação associada ao botão compilar
+	
+	TROCAR:
+	
+		Lexico lexico = new Lexico();
+		lexico.setInput( /* entrada */ );
+		try
+		{
+			Token t = null;
+			while ( (t = lexico.nextToken()) != null )
+			{
+				System.out.println(t.getLexeme() + t.getId());
+			}
+		}
+		catch ( LexicalError e )
+		{
+			System.out.println(e.getMessage() + " " + e.getPosition());   
+			//message  olhar ScannerConstants.java, String[] SCANNER_ERROR
+			//position precisa ser convertida para linha
+		}
+		
+	
+	POR:
+	
+		Lexico lexico = new Lexico();
+		Sintatico sintatico = new Sintatico();
+		Semantico semantico = new Semantico();
+		lexico.setInput( /* entrada */ );
+		try
+		{
+			sintatico.parse(lexico, semantico);    // tradução dirigida pela sintaxe
+		}
+		// mensagem: programa compilado com sucesso - área reservada para mensagens
+		
+		catch ( LexicalError e )
+		{
+			//Trata erros léxicos, conforme especificação da parte 2 - do compilador
+		}
+		catch ( SyntaticError e )
+		{
+		       System.out.println(e.getPosition() + " símbolo encontrado: na entrada " + e.getMessage()); 
+			 
+			//Trata erros sintáticos
+			//linha 			      sugestão: converter getPosition em linha
+			//símbolo encontrado    sugestão: implementar um método getToken no sintatico
+			//símbolos esperados,   alterar ParserConstants.java, String[] PARSER_ERROR
+                        // consultar os símbolos esperados no GALS (em Documentação > Tabela de Análise Sintática): 		
+		}
+		catch ( SemanticError e )
+		{
+			//Trata erros semânticos
+		}
