@@ -3,7 +3,7 @@ package com.domain.lexical;
 public enum Word {
 
     EPSILON(0, "î"),
-    DOLLAR(1, "$"),
+    DOLLAR(1, "EOF"), // $
     RESERVED_WORD(2, "palavra_reservada"),
     MAIN(3, "pr_main"),
     END(4, "pr_end"),
