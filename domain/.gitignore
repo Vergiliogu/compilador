@@ -4,9 +4,8 @@ domain.iml
 # intellij
 .idea
 
-# build
+# compilation junk
 **/*/bin/*
-!**/*/bin/classes/
 
-# manual test
-/lexical/src/test/resources/source-code.txt
+# compiled app - needed for those who can't compile in their computers
+!**/*/bin/classes/
