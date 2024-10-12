@@ -1,5 +1,8 @@
 package compiler;
 
+/**
+ * Represents an abstract compilation error, either due to lexical or syntactic analysis
+ */
 public class CompilationError extends Exception {
 
     private final String errorMessage;

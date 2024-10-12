@@ -2,6 +2,9 @@ package compiler;
 
 import java.util.Stack;
 
+/**
+ * Runs the Syntactic analysis.
+ */
 public class Syntactic {
 
     private final Lexical lexical;

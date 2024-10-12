@@ -2,6 +2,9 @@ package compiler;
 
 import java.util.Arrays;
 
+/**
+ * Runs the lexical analysis.
+ */
 public class Lexical {
 
     private final String sourceCode;
@@ -91,11 +94,11 @@ public class Lexical {
             return nextToken();
 
         String lexeme = sourceCode.substring(start, end);
-        int token = lookupToken(tokenForFinalState, lexeme);
+        int tokenId = lookupToken(tokenForFinalState, lexeme);
 
-        validateReservedWord(token, lexeme);
+        validateReservedWord(tokenId, lexeme);
 
-        return new Token(token, lexeme, lineNumber);
+        return new Token(tokenId, lexeme, lineNumber);
     }
 
     private void validateReservedWord(int token, String lexeme) throws CompilationError {

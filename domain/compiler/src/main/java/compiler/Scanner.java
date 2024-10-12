@@ -1204,7 +1204,7 @@ public interface Scanner {
         "",
         "",
         INVALID_STRING,
-        INVALID_SYMBOL, // &&
+        INVALID_SYMBOL, // && TODO: review
         "",
         "",
         "",
@@ -1223,7 +1223,7 @@ public interface Scanner {
         "",
         "",
         "",
-        INVALID_SYMBOL, // ||
+        INVALID_SYMBOL, // || TODO: review
         "",
         "",
         INVALID_STRING,

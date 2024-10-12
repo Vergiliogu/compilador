@@ -6,7 +6,7 @@ public class App {
     private static final String PROGRAM_COMPILED = "programa compilado com sucesso";
 
     public static void main(String[] args) {
-        // TODO: run from file
+        // TODO: run from file and add usage docs
 
         String sourceCode = """
                 main
