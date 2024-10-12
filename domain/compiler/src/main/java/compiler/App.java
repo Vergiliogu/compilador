@@ -1,30 +1,34 @@
 package compiler;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
+
 public class App {
 
     private static final String FORMATED_ERROR = "erro linha %d - %s";
     private static final String PROGRAM_COMPILED = "programa compilado com sucesso";
+    private static final String FILE_COULD_NOT_BE_LOADED = "arquivo não pode ser carregado: %s";
 
     public static void main(String[] args) {
-        // TODO: run from file and add usage docs
+        String output = PROGRAM_COMPILED;
 
-        String sourceCode = """
-                main
-                b_aa = false;
-                b_bb = true && b_aa;
-                write("something", b_bb);
-                end
-                """;
+        String filePath = args[0];
+        File sourceCodeFile = new File(filePath);
 
-        String ouput = PROGRAM_COMPILED;
+        try {
+            List<String> lines = Files.readAllLines(sourceCodeFile.toPath());
 
-        Semantic semantic = new Semantic();
-        Lexical lexical = new Lexical(sourceCode);
-        Syntactic syntactic = new Syntactic(lexical, semantic);
+            Semantic semantic = new Semantic();
+            Lexical lexical = new Lexical(String.join("\n", lines));
+            Syntactic syntactic = new Syntactic(lexical, semantic);
 
-        try { syntactic.run(); }
-        catch (compiler.CompilationError e) { ouput = FORMATED_ERROR.formatted(e.getLineNumber(), e.getErrorMessage()); }
+            syntactic.run();
+        }
+        catch (IOException e) { output = FILE_COULD_NOT_BE_LOADED.formatted(sourceCodeFile.toPath()); }
+        catch (CompilationError e) { output = FORMATED_ERROR.formatted(e.getLineNumber(), e.getErrorMessage()); }
 
-        System.out.printf(ouput);
+        System.out.printf(output);
     }
 }
