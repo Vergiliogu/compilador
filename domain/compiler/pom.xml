@@ -10,9 +10,7 @@
         <version>0.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>domain.lexical</groupId>
-    <artifactId>domain.lexical</artifactId>
-    <version>0.0.0-SNAPSHOT</version>
+    <artifactId>compiler</artifactId>
 
     <build>
         <directory>bin</directory>

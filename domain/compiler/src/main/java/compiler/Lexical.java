@@ -1,13 +1,8 @@
-package com.domain.lexical;
+package compiler;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
-public class LexicalAnalyser {
-
-    public static final String PROGRAM_COMPILED_MESSAGE = "SUCCESS: Tokens created";
-    public static final String LEXICAL_ERROR_MESSAGE = "ERROR: linha %d: %s";
+public class Lexical {
 
     private final String sourceCode;
 
@@ -16,29 +11,12 @@ public class LexicalAnalyser {
     private int lineNumber = 1;
     private int blockCommentStartLineNumber = 0;
 
-    public LexicalAnalyser(String sourceCode) {
+    public Lexical(String sourceCode) {
         this.sourceCode = sourceCode;
         this.currentCharPosition = 0;
     }
 
-    public LexicalResponse run() {
-        try {
-            LexicalAnalyser lexicalAnalyser = new LexicalAnalyser(sourceCode);
-
-            Token t;
-
-            List<Token> tokens = new LinkedList<>();
-
-            while ( (t = lexicalAnalyser.nextToken()) != null )
-                tokens.add(t);
-
-            return LexicalResponse.success(LexicalAnalyser.PROGRAM_COMPILED_MESSAGE, tokens);
-        } catch (LexicalError e) {
-            return LexicalResponse.error(String.format(LexicalAnalyser.LEXICAL_ERROR_MESSAGE, e.getLineNumber(), e.getMessage()));
-        }
-    }
-
-    private Token nextToken() throws LexicalError {
+    public Token nextToken() throws CompilationError {
         if (!hasInput()) return null;
 
         int start = currentCharPosition;
@@ -77,30 +55,34 @@ public class LexicalAnalyser {
         boolean isBlockCommentStartSeq = currChar == '>' && sourceCode.charAt(currentCharPosition) == '@';
 
         if (hasMoreChars && isBlockCommentStartSeq)
-                blockCommentStartLineNumber = lineNumber;
+            blockCommentStartLineNumber = lineNumber;
     }
 
-    private void validateFinalState(int finalState, int currentState, int previousState, int start) throws LexicalError {
+    private void validateFinalState(int finalState, int currentState, int previousState, int start) throws CompilationError {
         if (finalState < 0 || (finalState != currentState && tokenForState(previousState) == -2))
             throwErrorForState(previousState, start);
     }
 
-    private void throwErrorForState(int state, int start) throws LexicalError {
+    private void throwErrorForState(int state, int start) throws CompilationError {
         String error = Scanner.SCANNER_ERROR[state];
 
         switch (error) {
-            case Scanner.INVALID_STRING ->
-                    throw new LexicalError(error, lineNumber);
-            case Scanner.INVALID_BLOCK_COMENT ->
-                    throw new LexicalError(error, blockCommentStartLineNumber);
-            case Scanner.INVALID_SYMBOL ->
-                    throw new LexicalError(String.format("%s %s", sourceCode.charAt(currentCharPosition - 1), error), lineNumber);
-            case Scanner.INVALID_IDENTIFIER ->
-                    throw new LexicalError(String.format("%s %s", sourceCode.substring(start, currentCharPosition), error), lineNumber);
+            case Scanner.INVALID_STRING -> throw new CompilationError(error, lineNumber);
+            case Scanner.INVALID_COMMENT_BLOCK -> throw new CompilationError(error, blockCommentStartLineNumber);
+            case Scanner.INVALID_SYMBOL -> {
+                String symbolLexeme = String.valueOf(sourceCode.charAt(currentCharPosition - 1));
+
+                throw new CompilationError(symbolLexeme, error, lineNumber);
+            }
+            case Scanner.INVALID_IDENTIFIER -> {
+                String identifierLexeme = sourceCode.substring(start, currentCharPosition);
+
+                throw new CompilationError(identifierLexeme, error, lineNumber);
+            }
         }
     }
 
-    private Token buildToken(int finalState, int start, int end) throws LexicalError {
+    private Token buildToken(int finalState, int start, int end) throws CompilationError {
         currentCharPosition = end;
 
         int tokenForFinalState = tokenForState(finalState);
@@ -116,12 +98,12 @@ public class LexicalAnalyser {
         return new Token(token, lexeme, lineNumber);
     }
 
-    private void validateReservedWord(int token, String lexeme) throws LexicalError {
-        boolean isReservedWord = Word.RESERVED_WORD.getId() == token;
+    private void validateReservedWord(int token, String lexeme) throws CompilationError {
+        boolean isReservedWord = Scanner.SPECIAL_CASE == token;
         boolean invalidReservedWord = Arrays.stream(Scanner.SPECIAL_CASES_KEYS).noneMatch(e -> e.equals(lexeme));
 
         if (isReservedWord && invalidReservedWord)
-            throw new LexicalError(String.format("%s %s", lexeme, Scanner.INVALID_RESERVED_WORD), lineNumber);
+            throw new CompilationError(lexeme, Scanner.INVALID_RESERVED_WORD, lineNumber);
     }
 
     private int nextState(char c, int state) {

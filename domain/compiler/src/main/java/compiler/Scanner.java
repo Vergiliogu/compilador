@@ -1,6 +1,8 @@
-package com.domain.lexical;
+package compiler;
 
 public interface Scanner {
+
+    int SPECIAL_CASE = 2;
 
     int[] SCANNER_TABLE_INDEXES = {
             0,
@@ -1190,18 +1192,19 @@ public interface Scanner {
 
     int[] SPECIAL_CASES_VALUES = { 6, 7, 4, 8, 5, 3, 10, 13, 9, 14, 15, 11, 12 };
 
-    Object INVALID_RESERVED_WORD = "palavra reservada inválida";
-    String INVALID_BLOCK_COMENT = "comentário de bloco inválido ou não finalizado"; // + linha
+    String INVALID_RESERVED_WORD = "palavra reservada inválida";
+    String INVALID_COMMENT_BLOCK = "comentário de bloco inválido ou não finalizado";
     String INVALID_FLOAT = "constante_float inválida";
-    String INVALID_IDENTIFIER = "identificador inválido"; // + linha + sequencia nao reconhecida
-    String INVALID_STRING = "constante_string inválida"; // + linha
-    String INVALID_SYMBOL = "símbolo inválido"; // + linha + sequencia nao reconhecida
+    String INVALID_IDENTIFIER = "identificador inválido";
+    String INVALID_STRING = "constante_string inválida";
+    String INVALID_SYMBOL = "símbolo inválido";
 
     String[] SCANNER_ERROR = {
-        INVALID_SYMBOL,
+        INVALID_SYMBOL, // generic
         "",
         "",
         INVALID_STRING,
+        INVALID_SYMBOL, // &&
         "",
         "",
         "",
@@ -1220,26 +1223,25 @@ public interface Scanner {
         "",
         "",
         "",
-        "",
-        "",
+        INVALID_SYMBOL, // ||
         "",
         "",
         INVALID_STRING,
         "",
         INVALID_FLOAT,
         "",
-        INVALID_BLOCK_COMENT,
+            INVALID_COMMENT_BLOCK,
             INVALID_IDENTIFIER,
         "",
         "",
-        INVALID_BLOCK_COMENT,
+            INVALID_COMMENT_BLOCK,
         "",
         "",
         INVALID_FLOAT,
-        INVALID_BLOCK_COMENT,
+            INVALID_COMMENT_BLOCK,
         "",
-        INVALID_BLOCK_COMENT,
-        INVALID_BLOCK_COMENT,
+            INVALID_COMMENT_BLOCK,
+            INVALID_COMMENT_BLOCK,
         ""
     };
 }
