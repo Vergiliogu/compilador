@@ -7,12 +7,12 @@ import java.util.List;
 
 public class App {
 
-    private static final String FORMATED_ERROR = "erro linha %d - %s";
-    private static final String PROGRAM_COMPILED = "programa compilado com sucesso";
-    private static final String FILE_COULD_NOT_BE_LOADED = "arquivo não pode ser carregado: %s";
+    private static final String FORMATTED_ERROR_MESSAGE = "erro linha %d - %s";
+    private static final String PROGRAM_COMPILED_MESSAGE = "programa compilado com sucesso";
+    private static final String FILE_COULD_NOT_BE_LOADED_MESSAGE = "arquivo não pode ser carregado: %s";
 
     public static void main(String[] args) {
-        String output = PROGRAM_COMPILED;
+        String output = PROGRAM_COMPILED_MESSAGE;
 
         String filePath = args[0];
         File sourceCodeFile = new File(filePath);
@@ -26,8 +26,8 @@ public class App {
 
             syntactic.run();
         }
-        catch (IOException e) { output = FILE_COULD_NOT_BE_LOADED.formatted(sourceCodeFile.toPath()); }
-        catch (CompilationError e) { output = FORMATED_ERROR.formatted(e.getLineNumber(), e.getErrorMessage()); }
+        catch (IOException e) { output = FILE_COULD_NOT_BE_LOADED_MESSAGE.formatted(sourceCodeFile.toPath()); }
+        catch (CompilationError e) { output = FORMATTED_ERROR_MESSAGE.formatted(e.getLineNumber(), e.getErrorMessage()); }
 
         System.out.printf(output);
     }
