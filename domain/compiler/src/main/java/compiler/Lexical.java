@@ -12,7 +12,7 @@ public class Lexical {
     private int currentCharPosition;
 
     private int lineNumber = 1;
-    private int blockCommentStartLineNumber = 0;
+    private int commentBlockStartLineNumber = 0;
 
     public Lexical(String sourceCode) {
         this.sourceCode = sourceCode;
@@ -58,7 +58,7 @@ public class Lexical {
         boolean isBlockCommentStartSeq = currChar == '>' && sourceCode.charAt(currentCharPosition) == '@';
 
         if (hasMoreChars && isBlockCommentStartSeq)
-            blockCommentStartLineNumber = lineNumber;
+            commentBlockStartLineNumber = lineNumber;
     }
 
     private void validateFinalState(int finalState, int currentState, int previousState, int start) throws CompilationError {
@@ -72,6 +72,8 @@ public class Lexical {
         String lexeme = "";
 
         switch (error) {
+            case Scanner.INVALID_COMMENT_BLOCK ->
+                lineNumber = commentBlockStartLineNumber;
             case Scanner.INVALID_SYMBOL ->
                 lexeme = String.valueOf(sourceCode.charAt(currentCharPosition - 1));
             case Scanner.INVALID_IDENTIFIER ->
