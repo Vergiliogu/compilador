@@ -1202,11 +1202,11 @@ public interface Scanner {
     String INVALID_OR = "| símbolo inválido";
 
     String[] SCANNER_ERROR = {
-        INVALID_SYMBOL, // generic
+        INVALID_SYMBOL,
         "",
         "",
         INVALID_STRING,
-        INVALID_AND, // && TODO: review
+        INVALID_AND,
         "",
         "",
         "",
@@ -1225,7 +1225,7 @@ public interface Scanner {
         "",
         "",
         "",
-        INVALID_OR, // || TODO: review
+        INVALID_OR,
         "",
         "",
         INVALID_STRING,
