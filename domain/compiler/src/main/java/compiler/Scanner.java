@@ -1198,13 +1198,15 @@ public interface Scanner {
     String INVALID_IDENTIFIER = "identificador inválido";
     String INVALID_STRING = "constante_string inválida";
     String INVALID_SYMBOL = "símbolo inválido";
+    String INVALID_AND = "& símbolo inválido";
+    String INVALID_OR = "| símbolo inválido";
 
     String[] SCANNER_ERROR = {
         INVALID_SYMBOL, // generic
         "",
         "",
         INVALID_STRING,
-        INVALID_SYMBOL, // && TODO: review
+        INVALID_AND, // && TODO: review
         "",
         "",
         "",
@@ -1223,7 +1225,7 @@ public interface Scanner {
         "",
         "",
         "",
-        INVALID_SYMBOL, // || TODO: review
+        INVALID_OR, // || TODO: review
         "",
         "",
         INVALID_STRING,

@@ -69,20 +69,18 @@ public class Lexical {
     private void throwErrorForState(int state, int start) throws CompilationError {
         String error = Scanner.SCANNER_ERROR[state];
 
+        String lexeme = "";
+
         switch (error) {
-            case Scanner.INVALID_STRING -> throw new CompilationError(error, lineNumber);
-            case Scanner.INVALID_COMMENT_BLOCK -> throw new CompilationError(error, blockCommentStartLineNumber);
-            case Scanner.INVALID_SYMBOL -> {
-                String symbolLexeme = String.valueOf(sourceCode.charAt(currentCharPosition - 1));
-
-                throw new CompilationError(symbolLexeme, error, lineNumber);
-            }
-            case Scanner.INVALID_IDENTIFIER -> {
-                String identifierLexeme = sourceCode.substring(start, currentCharPosition);
-
-                throw new CompilationError(identifierLexeme, error, lineNumber);
-            }
+            case Scanner.INVALID_SYMBOL ->
+                lexeme = String.valueOf(sourceCode.charAt(currentCharPosition - 1));
+            case Scanner.INVALID_IDENTIFIER ->
+                lexeme = sourceCode.substring(start, currentCharPosition);
         }
+
+        throw lexeme.isEmpty()
+                ?  new CompilationError(error, lineNumber)
+                : new CompilationError(lexeme, error, lineNumber);
     }
 
     private Token buildToken(int finalState, int start, int end) throws CompilationError {
