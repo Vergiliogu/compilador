@@ -7,7 +7,7 @@ import java.util.List;
 
 public class App {
 
-    private static final String FORMATTED_ERROR_MESSAGE = "erro linha %d - %s";
+    private static final String FORMATTED_ERROR_MESSAGE = "Erro na linha %d - %s";
     private static final String PROGRAM_COMPILED_MESSAGE = "programa compilado com sucesso";
     private static final String FILE_COULD_NOT_BE_LOADED_MESSAGE = "arquivo não pode ser carregado: %s";
 
