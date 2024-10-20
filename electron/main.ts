@@ -98,7 +98,7 @@ ipcMain.handle('read-file', async (_event: unknown, filePath: string) => {
   }
 });
 
-ipcMain.handle('write-lexical-file', async (_event, content: string) => {
+ipcMain.handle('write-compiler-file', async (_event, content: string) => {
   const filePath = path.join(tmpdir(), 'source-code.txt');
 
   try {
@@ -112,7 +112,7 @@ ipcMain.handle('write-lexical-file', async (_event, content: string) => {
 
 const execPromise = util.promisify(exec);
 
-ipcMain.handle('run-lexical', async () => {
+ipcMain.handle('run-compiler', async () => {
   let appPath: string;
   if (process.env.NODE_ENV === 'development')
     appPath = process.env.APP_ROOT
@@ -121,8 +121,8 @@ ipcMain.handle('run-lexical', async () => {
   }
 
   const sourceCodeFile = path.join(tmpdir(), 'source-code.txt');
-  const classPath = `-cp ${path.join(appPath, 'domain', 'lexical', 'bin', 'classes')}`
-  const className = 'com.domain.compiler.App'
+  const classPath = `-cp ${path.join(appPath, 'domain', 'compiler', 'bin', 'classes')}`
+  const className = 'compiler.App'
 
   try {
     const { stderr, stdout } = await execPromise(
@@ -131,13 +131,13 @@ ipcMain.handle('run-lexical', async () => {
     );
 
     if (stderr) {
-      console.error('Error running lexical:', stderr);
+      console.error('Error running compiler:', stderr);
       return { success: false, error: stderr };
     }
 
     return { success: true, output: stdout };
   } catch (error) {
-    console.error('Error running lexical:', error);
+    console.error('Error running compiler:', error);
     return { success: false, error };
   }
 });
