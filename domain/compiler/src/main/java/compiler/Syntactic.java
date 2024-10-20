@@ -32,7 +32,7 @@ public class Syntactic {
 
     private boolean step() throws CompilationError {
         if (currentToken == null) {
-            int pos = 0;
+            int pos = 1;
             if (previousToken != null)
                 pos = previousToken.lineNumber() + previousToken.lexeme().length();
 
