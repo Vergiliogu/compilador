@@ -1,5 +1,4 @@
 import { createContext, PropsWithChildren, ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { convertToHTMLSafe, createLexicalTable } from "../utils/string.utils";
 
 interface AppContextType {
   terminalMessage?: ReactNode;
