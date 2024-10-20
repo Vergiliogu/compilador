@@ -36,7 +36,7 @@ public class Syntactic {
             if (previousToken != null)
                 pos = previousToken.lineNumber() + previousToken.lexeme().length();
 
-            currentToken = new Token(Parser.DOLLAR, "$", pos);
+            currentToken = new Token(Parser.DOLLAR, "EOF", pos);
         }
 
         int x = stack.pop();
