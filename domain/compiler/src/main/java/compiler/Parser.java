@@ -132,20 +132,20 @@ public interface Parser {
             "",
             "esperado EOF",
             "esperado palavra_reservada",
-            "esperado pr_main",
-            "esperado pr_end",
-            "esperado pr_if",
-            "esperado pr_elif",
-            "esperado pr_else",
-            "esperado pr_false",
-            "esperado pr_true",
-            "esperado pr_read",
-            "esperado pr_write",
-            "esperado pr_writeln",
-            "esperado pr_repeat",
-            "esperado pr_until",
-            "esperado pr_while",
-            "esperado id",
+            "esperado main",
+            "esperado end",
+            "esperado if",
+            "esperado elif",
+            "esperado else",
+            "esperado false",
+            "esperado true",
+            "esperado read",
+            "esperado write",
+            "esperado writeln",
+            "esperado repeat",
+            "esperado until",
+            "esperado while",
+            "esperado identificador",
             "esperado constante_int",
             "esperado constante_float",
             "esperado constante_string",
@@ -166,41 +166,41 @@ public interface Parser {
             "esperado (",
             "esperado )",
             "esperado main",
-            "esperado if read write writeln repeat id",                           // list_instr
-            "esperado end if read write writeln repeat id",                       // lista_instr1
-            "esperado if read write writeln repeat id",                           // instrucao
-            "esperado ; =",                                                       // instrucao1
-            "esperado id",                                                        // lista_i
-            "esperado , = ;",                                                     // lista_id1
-            "esperado if read write writeln repeat id",                           // comando
-            "esperado id",                                                        // atribuicao
-            "esperado read",                                                      // input
-            "esperado write writeln",                                             // output
-            "esperado if",                                                        // selecao
-            "esperado repeat",                                                    // repeticao
-            "esperado until while",                                               // repeticao1
-            "esperado id constante_string",                                       // lista_inputs
-            "esperado , )",                                                       // lista_inputs1
-            "esperado id constante_string",                                       // inicio_input
-            "esperado expressao",                                                 // lista_expr
-            "esperado , )",                                                       // lista_expr1
-            "esperado if read write writeln repeat id",                           // lista_comandos
-            "esperado end if elif else read write writeln repeat until while id", // lista_comandos1
-            "esperado if",                                                        // if
-            "esperado end elif else",                                             // elif
-            "esperado end else",                                                  // else
-            "esperado while",                                                     // repeat_while
-            "esperado until",                                                     // repeat_until
-            "esperado expressao",                                                 // expressao
-            "esperado expressao",                                                 // expressao1
-            "esperado expressao",                                                 // elemento
-            "esperado expressao",                                                 // relacional
-            "esperado expressao",                                                 // relacional1
-            "esperado == != > <",                                                 // operador_relacional
-            "esperado expressao",                                                 // aritmetica
-            "esperado expressao",                                                 // aritmetica1
-            "esperado expressao",                                                 // termo
-            "esperado expressao",                                                 // termo1
-            "esperado expressao",                                                 // fator
+            "esperado if read write writeln repeat identificador",                           // list_instr
+            "esperado end if read write writeln repeat identificador",                       // lista_instr1
+            "esperado if read write writeln repeat identificador",                           // instrucao
+            "esperado ; =",                                                                  // instrucao1
+            "esperado identificador",                                                        // lista_i
+            "esperado , = ;",                                                                // lista_identificador1
+            "esperado if read write writeln repeat identificador",                           // comando
+            "esperado identificador",                                                        // atribuicao
+            "esperado read",                                                                 // input
+            "esperado write writeln",                                                        // output
+            "esperado if",                                                                   // selecao
+            "esperado repeat",                                                               // repeticao
+            "esperado until while",                                                          // repeticao1
+            "esperado identificador constante_string",                                       // lista_inputs
+            "esperado , )",                                                                  // lista_inputs1
+            "esperado identificador constante_string",                                       // inicio_input
+            "esperado expressao",                                                            // lista_expr
+            "esperado , )",                                                                  // lista_expr1
+            "esperado if read write writeln repeat identificador",                           // lista_comandos
+            "esperado end if elif else read write writeln repeat until while identificador", // lista_comandos1
+            "esperado if",                                                                   // if
+            "esperado end elif else",                                                        // elif
+            "esperado end else",                                                             // else
+            "esperado while",                                                                // repeat_while
+            "esperado until",                                                                // repeat_until
+            "esperado expressao",                                                            // expressao
+            "esperado expressao",                                                            // expressao1
+            "esperado expressao",                                                            // elemento
+            "esperado expressao",                                                            // relacional
+            "esperado expressao",                                                            // relacional1
+            "esperado == != > <",                                                            // operador_relacional
+            "esperado expressao",                                                            // aritmetica
+            "esperado expressao",                                                            // aritmetica1
+            "esperado expressao",                                                            // termo
+            "esperado expressao",                                                            // termo1
+            "esperado expressao",                                                            // fator
     };
 }
