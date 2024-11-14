@@ -1,16 +1,16 @@
 package compiler;
 
-public interface Parser {
+public final class Parser {
 
-    int EPSILON  = 0;
-    int DOLLAR = 1;
-    int STRING_CONSTANT = 19;
+    static int EPSILON  = 0;
+    static int DOLLAR = 1;
+    static int STRING_CONSTANT = 19;
 
-    int START_SYMBOL = 36;
-    int FIRST_NON_TERMINAL    = 36;
-    int FIRST_SEMANTIC_ACTION = 73;
+    static int START_SYMBOL = 36;
+    static int FIRST_NON_TERMINAL    = 36;
+    static int FIRST_SEMANTIC_ACTION = 73;
 
-    int[][] PARSER_TABLE = {
+    static int[][] PARSER_TABLE = {
         { -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
         { -1, -1, -1, -1,  1, -1, -1, -1, -1,  1,  1,  1,  1, -1, -1,  1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
         { -1, -1, -1,  3,  2, -1, -1, -1, -1,  2,  2,  2,  2, -1, -1,  2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
@@ -50,7 +50,7 @@ public interface Parser {
         { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 59, 60, 61, 62, -1, -1, -1, -1, -1, -1, -1, 64, 65, -1, -1, -1, -1, -1, 63, -1 }
     };
 
-    int[][] PRODUCTIONS = {
+    static int[][] PRODUCTIONS = {
         {  3, 37,  4 },
         { 39, 32, 38 },
         { 37 },
@@ -128,7 +128,7 @@ public interface Parser {
         {  0 }
     };
 
-    String[] PARSER_ERROR = {
+    static String[] PARSER_ERROR = {
             "",
             "esperado EOF",
             "esperado palavra_reservada",

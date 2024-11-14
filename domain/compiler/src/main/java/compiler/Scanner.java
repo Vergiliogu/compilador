@@ -1,10 +1,10 @@
 package compiler;
 
-public interface Scanner {
+public final class Scanner {
 
-    int SPECIAL_CASE = 2;
+    static int SPECIAL_CASE = 2;
 
-    int[] SCANNER_TABLE_INDEXES = {
+    static int[] SCANNER_TABLE_INDEXES = {
             0,
             54,
             54,
@@ -50,7 +50,7 @@ public interface Scanner {
             1131
     };
 
-    int[][] SCANNER_TABLE = {
+    static int[][] SCANNER_TABLE = {
             {9, 1},
             {10, 1},
             {32, 1},
@@ -1184,24 +1184,24 @@ public interface Scanner {
             {60, 41}
     };
 
-    int[] TOKEN_STATE = { -2,  0, 22, -1, -1, 34, 35, 29, 27, 31, 28, 30, 17, 17, 32, 25, 33, 26,  2,  2,  2,  2,  2, -1, 24, 19, -1, 20, -1, 23, -2, -2, 21, 18, -2, 16, 16, -1, -2, 16, -2,  0 };
+    static int[] TOKEN_STATE = { -2,  0, 22, -1, -1, 34, 35, 29, 27, 31, 28, 30, 17, 17, 32, 25, 33, 26,  2,  2,  2,  2,  2, -1, 24, 19, -1, 20, -1, 23, -2, -2, 21, 18, -2, 16, 16, -1, -2, 16, -2,  0 };
 
-    int[] SPECIAL_CASES_INDEXES = { 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13 };
+    static int[] SPECIAL_CASES_INDEXES = { 0, 0, 0, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13 };
 
-    String[] SPECIAL_CASES_KEYS = { "elif", "else", "end", "false", "if", "main", "read", "repeat", "true", "until", "while", "write", "writeln" };
+    static String[] SPECIAL_CASES_KEYS = { "elif", "else", "end", "false", "if", "main", "read", "repeat", "true", "until", "while", "write", "writeln" };
 
-    int[] SPECIAL_CASES_VALUES = { 6, 7, 4, 8, 5, 3, 10, 13, 9, 14, 15, 11, 12 };
+    static int[] SPECIAL_CASES_VALUES = { 6, 7, 4, 8, 5, 3, 10, 13, 9, 14, 15, 11, 12 };
 
-    String INVALID_RESERVED_WORD = "palavra reservada inválida";
-    String INVALID_COMMENT_BLOCK = "comentário de bloco inválido ou não finalizado";
-    String INVALID_FLOAT = "constante_float inválida";
-    String INVALID_IDENTIFIER = "identificador inválido";
-    String INVALID_STRING = "constante_string inválida";
-    String INVALID_SYMBOL = "símbolo inválido";
-    String INVALID_AND = "& símbolo inválido";
-    String INVALID_OR = "| símbolo inválido";
+    static final String INVALID_RESERVED_WORD = "palavra reservada inválida";
+    static final String INVALID_COMMENT_BLOCK = "comentário de bloco inválido ou não finalizado";
+    static final String INVALID_FLOAT = "constante_float inválida";
+    static final String INVALID_IDENTIFIER = "identificador inválido";
+    static final String INVALID_STRING = "constante_string inválida";
+    static final String INVALID_SYMBOL = "símbolo inválido";
+    static final String INVALID_AND = "& símbolo inválido";
+    static final String INVALID_OR = "| símbolo inválido";
 
-    String[] SCANNER_ERROR = {
+    static String[] SCANNER_ERROR = {
         INVALID_SYMBOL,
         "",
         "",

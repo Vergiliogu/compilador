@@ -12,10 +12,10 @@ public class App {
     private static final String FILE_COULD_NOT_BE_LOADED_MESSAGE = "arquivo não pode ser carregado: %s";
 
     public static void main(String[] args) {
-        String output = PROGRAM_COMPILED_MESSAGE;
-
         String filePath = args[0];
         File sourceCodeFile = new File(filePath);
+
+        String output = PROGRAM_COMPILED_MESSAGE;
 
         try {
             List<String> lines = Files.readAllLines(sourceCodeFile.toPath());
