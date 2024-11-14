@@ -121,7 +121,7 @@ ipcMain.handle('run-compiler', async () => {
   }
 
   const sourceCodeFile = path.join(tmpdir(), 'source-code.txt');
-  const classPath = `-cp ${path.join(appPath, 'domain', 'compiler', 'bin', 'classes')}`
+  const classPath = `-cp "${path.join(appPath, 'domain', 'compiler', 'bin', 'classes')}"`
   const className = 'compiler.App'
 
   try {
