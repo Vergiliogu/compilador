@@ -1,7 +1,5 @@
 package compiler;
 
-import java.io.FileOutputStream;
-
 /**
  * Runs the semantic analysis.
  */
