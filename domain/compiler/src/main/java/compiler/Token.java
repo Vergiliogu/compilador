@@ -7,4 +7,6 @@ package compiler;
  *
  * @see Scanner Scanner - for more context on token id.
  */
-public record Token(int tokenId, String lexeme, int lineNumber) { }
+public record Token(int tokenId, String lexeme, int lineNumber) {
+    public static final int INTEGER = 17;
+}

@@ -9,3 +9,6 @@ domain.iml
 
 # compiled app - needed for those who can't compile in their computers
 !**/*/bin/classes/
+
+# test
+resources/source_code_for_test.txt
