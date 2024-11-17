@@ -7,8 +7,8 @@ ParserName = Sintatico
 SemanticName = Semantico
 ScannerCaseSensitive = true
 ScannerTable = Compact
-Input = Stream
-Parser = SLR
+Input = String
+Parser = LL
 #RegularDefinitions
 minu: [a-z]
 mai: [A-Z]
@@ -71,11 +71,15 @@ constante_string: \"([^\n\""%"] | "%"x)*\"
 
 <lista_instr>
 
+<lista_instr1>
+
 <instrucao>
 
-<declaracao_var>
+<instrucao1>
 
 <lista_id>
+
+<lista_id1>
 
 <comando>
 
@@ -89,15 +93,21 @@ constante_string: \"([^\n\""%"] | "%"x)*\"
 
 <repeticao>
 
-<expressao>
+<repeticao1>
 
 <lista_inputs>
+
+<lista_inputs1>
 
 <inicio_input>
 
 <lista_expr>
 
+<lista_expr1>
+
 <lista_comandos>
+
+<lista_comandos1>
 
 <if>
 
@@ -109,62 +119,124 @@ constante_string: \"([^\n\""%"] | "%"x)*\"
 
 <repeat_until>
 
+<expressao>
+
+<expressao1>
+
+<elemento>
+
+<relacional>
+
+<relacional1>
+
+<operador_relacional>
+
+<aritmetica>
+
+<aritmetica1>
+
+<termo>
+
+<termo1>
+
+<fator>
+
+
 // >
 #Grammar
-<programa> ::= pr_main <lista_instr> pr_end ;
+<programa> ::= #100 pr_main <lista_instr> pr_end #101 ;
 
-<lista_instr> ::= <instrucao>";" | <instrucao>";" <lista_instr> ;
+<lista_instr> ::= <instrucao> ";" <lista_instr1> ;
 
-<instrucao> ::= <declaracao_var> | <comando> ;
+<lista_instr1> ::= <lista_instr> | î ;
 
-<declaracao_var> ::= <lista_id> ;
+<instrucao> ::= <lista_id> <instrucao1> | <input> | <output> | <selecao> | <repeticao> ;
+
+<instrucao1> ::= "=" <expressao> #103 | #102 î ;
 
 <comando> ::= <atribuicao> | <input> | <output> | <selecao> | <repeticao> ;
 
-<atribuicao> ::= <lista_id> "=" <expressao> ;
+<atribuicao> ::= <lista_id> "=" <expressao> #103 ;
 
 
 
 <input> ::= pr_read "(" <lista_inputs> ")" ;
 
-<lista_inputs> ::= <inicio_input> <lista_id> | <inicio_input> <lista_id>";" <lista_inputs> ;
+<lista_inputs> ::= <inicio_input> id #105 <lista_inputs1> ;
 
-<inicio_input> ::= constante_string "," | Ã® ;
+<lista_inputs1> ::= "," <lista_inputs> | î ; 
 
-
-
-<output> ::= pr_write "(" <lista_expr> ")" | pr_writeln "(" <lista_expr> ")" ;
+<inicio_input> ::= constante_string #106 "," | î ;
 
 
 
-<selecao> ::= <if> <elif> <else> ;
-
-<if> ::= pr_if <expressao> <lista_comandos> ;
-
-<elif> ::= Ã® | pr_elif <expressao> <lista_comandos> <elif> ;
-
-<else> ::= <lista_comandos> pr_end | Ã® ;
+<output> ::= pr_write "(" <lista_expr> ")" | pr_writeln "(" <lista_expr> ")" #107 ;
 
 
 
-<repeticao> ::= <repeat_while> | <repeat_until> ;
+<selecao> ::= <if> <elif> #110 <else> #111 ;
 
-<repeat_while> ::= pr_repeat <lista_comandos> pr_while <expressao> ;
+<if> ::= pr_if <expressao> #109 <lista_comandos> ;
 
-<repeat_until> ::= pr_repeat <lista_comandos> pr_until <expressao> ;
+<elif> ::= î | #110 pr_elif <expressao> #112 <lista_comandos> <elif> ;
+
+<else> ::= pr_else <lista_comandos> pr_end | pr_end ;
+
+
+
+<repeticao> ::= #113 pr_repeat <lista_comandos> <repeticao1> ;
+
+<repeticao1> ::= <repeat_while> | <repeat_until> ;
+
+<repeat_while> ::= pr_while <expressao> #114 ;
+
+<repeat_until> ::= pr_until <expressao> #115 ;
+
+
+
+<expressao> ::= <elemento> <expressao1> ;
+
+<expressao1> ::= î | "&&" <elemento> #116 <expressao1> | "||" <elemento> #117 <expressao1> ;
+
+<elemento> ::= <relacional> | pr_true #118 | pr_false #119 | "!" <elemento> #120 ;
+
+<relacional> ::= <aritmetica> <relacional1> ;
+
+<relacional1> ::= î | <operador_relacional> #121 <aritmetica> #122 ;
+
+<operador_relacional>::= "==" | "!=" | "<" | ">" ;
+
+<aritmetica> ::= <termo> <aritmetica1> ;
+
+<aritmetica1> ::= î | "+" <termo> #123 <aritmetica1> | "-" <termo> #124 <aritmetica1> ;
+
+<termo> ::= <fator> <termo1> ;
+
+<termo1> ::= î | "*" <fator> #125 <termo1> | "/" <fator> #126 <termo1> ;
+
+<fator> ::= id #127 |
+ constante_int #128 |
+ constante_float #129 |
+ constante_string #130 |
+ "(" <expressao> ")" |
+ "+" <fator> |
+ "-" <fator> #131 ; 
+
 
 
 // utilitarios
 
 
-<lista_comandos> ::= <comando> | <comando> <lista_comandos> ;
 
-<lista_expr> ::= <expressao> | <expressao>"," <lista_expr> ;
+<lista_comandos> ::= <comando> ";" <lista_comandos1> ;
 
-<lista_id> ::= id | id"," <lista_id> ;
+<lista_comandos1> ::= <lista_comandos> | î ;
 
-// <expressao>
+<lista_expr> ::= <expressao> #108 <lista_expr1> ;
 
+<lista_expr1> ::= "," <lista_expr> | î ;
 
+<lista_id> ::= id #104 <lista_id1> ;
 
+<lista_id1> ::= "," <lista_id> | î ;
 
