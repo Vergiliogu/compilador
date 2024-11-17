@@ -28,22 +28,24 @@ public class Semantic {
     private final Deque<Type> types = new ArrayDeque<>();
     private final StringBuilder out = new StringBuilder();
 
-    public void executeAction(int action, Token token)	throws CompilationError {
+    public void executeAction(int action, Token t)throws CompilationError {
         switch (action) {
             case 100: appendHeader();          break;
             case 101: appendFooter();          break;
+            case 107: appendLineBreak();       break;
             case 108: appendOutput();          break;
             case 123: appendSum();             break;
-            case 128: appendExpression(token); break;
+            case 128: appendInt(t.lexeme());   break;
+            case 129: appendFloat(t.lexeme()); break;
         }
     }
 
     private void appendSum() {
-        compareTwoTypes();
+        compareTwoTypesAndPushResulting();
         out.append("add").append("\n");
     }
 
-    private void compareTwoTypes() {
+    private void compareTwoTypesAndPushResulting() {
         types.push(types.pop().take(types.pop()));
     }
 
@@ -58,22 +60,31 @@ public class Semantic {
     private void appendOutput() {
         Type type = types.pop();
 
+        String outputLine = "call void [mscorlib]System.Console::Write(%s)";
+
         if (type == Type.INT_64)
-            out
-                    .append("call void [mscorlib]System.Console::Write(%s)".formatted(Type.FLOAT_64.serialize()))
-                    .append("\n");
+            out.append(outputLine.formatted(Type.FLOAT_64.serialize()));
+        else
+            out.append(outputLine.formatted(type.serialize()));
+
+        out.append("\n");
     }
 
-    private void appendExpression(final Token t) {
-        switch (t.tokenId()) {
-            case Token.INTEGER: handleInteger(t.lexeme()); break;
-        }
+    private void appendLineBreak() {
+        out.append("ldstr \"\\n\"").append("\n");
+        types.push(Type.STRING);
+        appendOutput();
     }
 
-    private void handleInteger(String lexeme) {
+    private void appendInt(String lexeme) {
         types.push(Type.INT_64);
         out.append("ldc.i8 ").append(lexeme).append("\n");
         out.append("conv.r8").append("\n");
+    }
+
+    private void appendFloat(String lexeme) {
+        types.push(Type.FLOAT_64);
+        out.append("ldc.r8 ").append(lexeme.replaceAll(",", ".")).append("\n");
     }
 
     /**
