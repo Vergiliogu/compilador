@@ -1,7 +1,6 @@
 package compiler;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +30,7 @@ public class Semantic {
     private final Deque<Type> types = new ArrayDeque<>();
     private final List<String> ids = new LinkedList<>();
     private final List<String> symbols = new LinkedList<>();
+
     private final StringBuilder out = new StringBuilder();
 
     public void executeAction(int action, Token t) throws CompilationError {
@@ -131,39 +131,39 @@ public class Semantic {
 
     // 123
     private void appendSum() {
-        compareTwoTypesAndPushResulting();
+        compareTwoTypesAndPushResultingType();
         out.append("add").append("\n");
     }
 
     // 124
     private void appendSub() {
-        compareTwoTypesAndPushResulting();
+        compareTwoTypesAndPushResultingType();
         appendMinus();
     }
 
     // 125
     private void appendMul() {
-        compareTwoTypesAndPushResulting();
+        compareTwoTypesAndPushResultingType();
         out.append("mul").append("\n");
     }
 
     // 126
     private void appendDiv() {
-        compareTwoTypesAndPushResulting();
+        compareTwoTypesAndPushResultingType();
         out.append("div").append("\n");
     }
 
     // 128
     private void appendInt(String lexeme) {
         types.push(Type.INT_64);
-        out.append("ldc.i8 ").append(lexeme).append("\n");
+        out.append("ldc.i8 %s".formatted(lexeme)).append("\n");
         out.append("conv.r8").append("\n");
     }
 
     // 129
     private void appendFloat(String lexeme) {
         types.push(Type.FLOAT_64);
-        out.append("ldc.r8 ").append(lexeme.replaceAll(",", ".")).append("\n");
+        out.append("ldc.r8 %s".formatted(lexeme.replaceAll(",", "."))).append("\n");
     }
 
     // 130
@@ -186,7 +186,7 @@ public class Semantic {
 
     // utilities
 
-    private void compareTwoTypesAndPushResulting() {
+    private void compareTwoTypesAndPushResultingType() {
         types.push(types.pop().take(types.pop()));
     }
 
@@ -218,7 +218,7 @@ public class Semantic {
         }
 
         /**
-         * Compare this type to another type.
+         * Compare that type to <code>anotherType</code>.
          */
         public Type take(Type anotherType) {
             if (this == INT_64 && anotherType == INT_64) return INT_64;
