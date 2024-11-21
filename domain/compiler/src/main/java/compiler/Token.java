@@ -8,6 +8,5 @@ package compiler;
  * @see Scanner Scanner - for more context on token id.
  */
 public record Token(int tokenId, String lexeme, int lineNumber) {
-    public static final int INTEGER = 17;
-    public static final int FLOAT = 18;
+
 }
