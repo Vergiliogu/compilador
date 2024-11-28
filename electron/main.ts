@@ -26,7 +26,7 @@ function createWindow() {
     minHeight: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
-      devTools: false, // Disable DevTools
+      devTools: true, // Disable DevTools
       contextIsolation: true, // Ensures security when exposing APIs
       nodeIntegration: false, // Ensures no direct access to Node APIs
     },

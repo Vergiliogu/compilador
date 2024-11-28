@@ -6,7 +6,7 @@ interface AppContextType {
   terminalHeight: number;
   setTerminalHeight: (height: number) => void;
   editorText: string;
-  setEditorText: (text: string) => void;
+  handleEditContent: (text: string) => void;
   actions: {
     handleNew: () => void;
     handleOpenFile: () => void;
@@ -18,6 +18,8 @@ interface AppContextType {
     handleCutToClipboard: () => void;
   }
   editorRef: React.MutableRefObject<HTMLTextAreaElement | null>;
+  errorLine: number | null;
+  errorLineText: string;
 }
 
 interface LoadedFileMetaData {
@@ -32,7 +34,10 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
   const [terminalMessage, setTerminalMessage] = useState<ReactNode>('');
   const [statusFile, setStatusFile] = useState<string | undefined>(undefined);
   const [editorText, setEditorText] = useState<string>('');
+  const [errorLine, setErrorLine] = useState<number | null>(null);
+  const [errorLineText, setErrorLineText] = useState<string>('');
   const editorRef = useRef<HTMLTextAreaElement | null>(null);
+  const compileTimerRef = useRef<NodeJS.Timeout>();
   const [loadedFileMetaData, setLoadedFileMetaData] = useState<LoadedFileMetaData>({
     filePath: '',
     isNewFile: true,
@@ -74,14 +79,26 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
     }
   }, [editorText, loadedFileMetaData])
 
-  const handleCompile = useCallback(async () => {
-    const { success } = await window.electron.writeCompilerFile(editorText);
+  const handleCompile = useCallback(async (text?: string) => {
+    console.log(text)
+    const { success } = await window.electron.writeCompilerFile(text || editorText);
     if (!success) return setTerminalMessage('Não foi possível compilar o código. 1');
 
     const compiler = await window.electron.runCompiler();
     if (!compiler.success) return setTerminalMessage('Não foi possível compilar o código. 2');
-    
+
     setTerminalMessage(compiler.output);
+
+    const errorIndex = compiler.output.indexOf('Erro na linha ')
+    if (errorIndex !== -1) {
+      const postLine = compiler.output.indexOf(' -')
+      const line = parseInt(compiler.output.slice(errorIndex + 14, postLine));
+      setErrorLine(line);
+      setErrorLineText(compiler.output.slice(postLine + 3));
+    } else {
+      setErrorLine(null);
+      setErrorLineText('');
+    }
   }, [editorText])
 
   const handleShowTeam = useCallback(() => {
@@ -164,6 +181,16 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
     handleCutToClipboard,
   ])
 
+  const handleEditContent = (text: string) => {
+    setEditorText(text);
+
+    clearTimeout(compileTimerRef.current);
+
+    compileTimerRef.current = setTimeout(() => {
+      handleCompile(text);
+    }, 250);
+  }
+
   return (
     <AppContext.Provider value={{
       statusFile,
@@ -171,7 +198,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
       terminalHeight,
       setTerminalHeight,
       editorText,
-      setEditorText,
+      handleEditContent,
       actions: {
         handleNew,
         handleOpenFile,
@@ -183,6 +210,8 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
         handleCutToClipboard,
       },
       editorRef,
+      errorLine,
+      errorLineText,
     }}>
       {children}
     </AppContext.Provider>
