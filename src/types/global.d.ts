@@ -10,7 +10,7 @@ export interface ElectronAPI {
   readFile: (filePath: string) => Promise<string | null>;
   writeFile: (filePath: string, content: string) => Promise<{ success: boolean, filePath: string, error?: any }>;
   writeCompilerFile: (content: string) => Promise<{ success: boolean, filePath: string, error?: any }>;
-  runCompiler: () => Promise<{ success: boolean, output: string, error?: any }>;
+  runCompiler: (filePath?: string) => Promise<{ success: boolean, output: string, error?: any }>;
 }
 
 declare global {

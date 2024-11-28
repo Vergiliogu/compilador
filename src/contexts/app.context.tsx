@@ -79,15 +79,25 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
     }
   }, [editorText, loadedFileMetaData])
 
-  const handleCompile = useCallback(async (text?: string) => {
-    console.log(text)
-    const { success } = await window.electron.writeCompilerFile(text || editorText);
-    if (!success) return setTerminalMessage('Não foi possível compilar o código. 1');
+  const handleCompile = useCallback(async () => {
+    if (loadedFileMetaData.isNewFile) {
+      const { success } = await window.electron.writeCompilerFile(editorText);
+      if (!success) return setTerminalMessage('Não foi possível compilar o código. 1');
+    }
 
-    const compiler = await window.electron.runCompiler();
+    const compiler = await window.electron.runCompiler(loadedFileMetaData.isNewFile ? undefined : loadedFileMetaData.filePath);
     if (!compiler.success) return setTerminalMessage('Não foi possível compilar o código. 2');
 
     setTerminalMessage(compiler.output);
+  }, [editorText, loadedFileMetaData])
+
+  const handleCompileInLine = useCallback(async (text: string) => {
+    if (loadedFileMetaData.isNewFile) {
+      const { success } = await window.electron.writeCompilerFile(text);
+      if (!success) return;
+    }
+
+    const compiler = await window.electron.runCompiler(loadedFileMetaData.isNewFile ? undefined : loadedFileMetaData.filePath);
 
     const errorIndex = compiler.output.indexOf('Erro na linha ')
     if (errorIndex !== -1) {
@@ -99,7 +109,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
       setErrorLine(null);
       setErrorLineText('');
     }
-  }, [editorText])
+  }, [loadedFileMetaData])
 
   const handleShowTeam = useCallback(() => {
     setTerminalMessage(
@@ -184,10 +194,10 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
   const handleEditContent = (text: string) => {
     setEditorText(text);
 
-    clearTimeout(compileTimerRef.current);
+    clearTimeout(compileTimerRef.current); 1
 
     compileTimerRef.current = setTimeout(() => {
-      handleCompile(text);
+      handleCompileInLine(text);
     }, 250);
   }
 

@@ -29,5 +29,5 @@ contextBridge.exposeInMainWorld('electron', {
   readFile: (filePath: string) => ipcRenderer.invoke('read-file', filePath),
   writeFile: (filePath: string, content: string) => ipcRenderer.invoke('write-file', filePath, content),
   writeCompilerFile: (content: string) => ipcRenderer.invoke('write-compiler-file', content),
-  runCompiler: () => ipcRenderer.invoke('run-compiler'),
+  runCompiler: (filePath?: string) => ipcRenderer.invoke('run-compiler', filePath),
 });

@@ -112,7 +112,7 @@ ipcMain.handle('write-compiler-file', async (_event, content: string) => {
 
 const execPromise = util.promisify(exec);
 
-ipcMain.handle('run-compiler', async () => {
+ipcMain.handle('run-compiler', async (_event: unknown, filePath?: string) => {
   let appPath: string;
   if (process.env.NODE_ENV === 'development')
     appPath = process.env.APP_ROOT
@@ -120,13 +120,13 @@ ipcMain.handle('run-compiler', async () => {
     appPath = path.join(app.getAppPath(), '..')
   }
 
-  const sourceCodeFile = path.join(tmpdir(), 'source-code.txt');
+  const sourceCodePath = filePath || path.join(tmpdir(), 'source-code.txt');
   const classPath = `-cp "${path.join(appPath, 'domain', 'compiler', 'bin', 'classes')}"`
   const className = 'compiler.App'
 
   try {
     const { stderr, stdout } = await execPromise(
-      `java ${classPath} ${className} ${sourceCodeFile}`,
+      `java ${classPath} ${className} ${sourceCodePath}`,
       { encoding: 'latin1' }
     );
 
