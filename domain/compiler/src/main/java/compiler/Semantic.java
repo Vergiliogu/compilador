@@ -63,16 +63,16 @@ public class Semantic {
                 appendOutput();
                 break;
             case 109:
-                n109();
+                ifP1();
                 break;
             case 110:
-                n110();
+                ifP2();
                 break;
             case 111:
-                n111();
+                ifP3();
                 break;
             case 112:
-                n112();
+                ifP4();
                 break;
             case 116:
                 appendAnd();
@@ -216,7 +216,7 @@ public class Semantic {
     }
 
     // 109
-    private void n109() {
+    private void ifP1() {
         String label1 = "L" + labels.size();
         labels.push(label1);
         String label2 = "L" + labels.size();
@@ -226,7 +226,7 @@ public class Semantic {
     }
 
     // 110
-    private void n110() {
+    private void ifP2() {
         String label2 = labels.pop();
         String label1 = labels.pop();
 
@@ -238,14 +238,14 @@ public class Semantic {
     }
 
     // 111
-    private void n111() {
+    private void ifP3() {
         String label = labels.pop();
 
         out.append("%s:".formatted(label)).append("\n");
     }
 
     // 112
-    private void n112() {
+    private void ifP4() {
         String label = "L" + labels.size();
 
         out.append("brfalse %s".formatted(label)).append("\n");
