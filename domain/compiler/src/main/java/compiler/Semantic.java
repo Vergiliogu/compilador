@@ -10,22 +10,20 @@ import java.util.List;
  */
 public class Semantic {
 
-    private static final String HEADER =
-    """
-    .assembly extern mscorlib {}
-    .assembly _codigo_objeto{}
-    .module _codigo_objeto.exe
-    .class public UNICA{
-    .method static public void _principal() {
-    .entrypoint
-    """;
+    private static final String HEADER = """
+            .assembly extern mscorlib {}
+            .assembly _codigo_objeto{}
+            .module _codigo_objeto.exe
+            .class public UNICA{
+            .method static public void _principal() {
+            .entrypoint
+            """;
 
-    private static final String FOOTER =
-    """
-    ret
-    }
-    }
-    """;
+    private static final String FOOTER = """
+            ret
+            }
+            }
+            """;
 
     private final Deque<Type> types = new ArrayDeque<>();
     private final List<String> ids = new LinkedList<>();
@@ -35,24 +33,66 @@ public class Semantic {
 
     public void executeAction(int action, Token t) throws CompilationError {
         switch (action) {
-            case 100: appendHeader();              break;
-            case 101: appendFooter();              break;
-            case 102: appendId(t);                 break;
-            case 104: ids.add(t.lexeme());         break;
-            case 106: appendOutString(t.lexeme()); break;
-            case 107: appendLineBreak();           break;
-            case 108: appendOutput();              break;
-            case 118: appendTrue();                break;
-            case 119: appendFalse();               break;
-            case 120: appendNot();                 break;
-            case 123: appendSum();                 break;
-            case 124: appendSub();                 break;
-            case 125: appendMul();                 break;
-            case 126: appendDiv();                 break;
-            case 128: appendInt(t.lexeme());       break;
-            case 129: appendFloat(t.lexeme());     break;
-            case 130: appendString(t.lexeme());    break;
-            case 131: appendMinus();               break;
+            case 100:
+                appendHeader();
+                break;
+            case 101:
+                appendFooter();
+                break;
+            case 102:
+                appendId(t);
+                break;
+            case 103:
+                appendAttribution(t);
+                break;
+            case 104:
+                ids.add(t.lexeme());
+                break;
+            case 105:
+                appendInput(t);
+                break;
+            case 106:
+                appendOutString(t.lexeme());
+                break;
+            case 107:
+                appendLineBreak();
+                break;
+            case 108:
+                appendOutput();
+                break;
+            case 118:
+                appendTrue();
+                break;
+            case 119:
+                appendFalse();
+                break;
+            case 120:
+                appendNot();
+                break;
+            case 123:
+                appendSum();
+                break;
+            case 124:
+                appendSub();
+                break;
+            case 125:
+                appendMul();
+                break;
+            case 126:
+                appendDiv();
+                break;
+            case 128:
+                appendInt(t.lexeme());
+                break;
+            case 129:
+                appendFloat(t.lexeme());
+                break;
+            case 130:
+                appendString(t.lexeme());
+                break;
+            case 131:
+                appendMinus();
+                break;
         }
     }
 
@@ -81,6 +121,41 @@ public class Semantic {
         }
 
         ids.clear();
+    }
+
+    // 103
+    private void appendAttribution(Token t) throws CompilationError {
+        if (types.pop() == Type.INT_64) {
+            out.append("conv.r8").append("\n");
+        }
+
+        for (int i = 0; i < ids.size() - 1; i++) {
+            out.append("dup").append("\n");
+        }
+
+        for (String id : ids) {
+            if (!symbols.contains(id)) {
+                throw new CompilationError("%s não declarado".formatted(id), t.lineNumber());
+            }
+
+            out.append("stdloc %s".formatted(id)).append("\n");
+        }
+
+        ids.clear();
+    }
+
+    // 105
+    private void appendInput(Token t) throws CompilationError {
+        String id = t.lexeme();
+        Type idType = retrieveTypeFromId(id);
+
+        if (!symbols.contains(id)) {
+            throw new CompilationError("%s não declarado".formatted(id), t.lineNumber());
+        }
+
+        out.append("call string [mscorlib]System.Console::ReadLine()".formatted(id)).append("\n");
+        out.append("call %s [mscorlib]System.<classe>::Parse(string)".formatted(idType)).append("\n");
+        out.append("stdloc %s".formatted(id)).append("\n");
     }
 
     // 106
@@ -221,7 +296,8 @@ public class Semantic {
          * Compare that type to <code>anotherType</code>.
          */
         public Type take(Type anotherType) {
-            if (this == INT_64 && anotherType == INT_64) return INT_64;
+            if (this == INT_64 && anotherType == INT_64)
+                return INT_64;
             return FLOAT_64;
         }
     }
