@@ -1,5 +1,6 @@
 package compiler;
 
+import java.security.SecureRandom;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -32,6 +33,7 @@ public class Semantic {
     private String relationalOperator = "";
 
     private final StringBuilder out = new StringBuilder();
+    private int labelCounter = 0;
 
     public void executeAction(int action, Token t) throws CompilationError {
         switch (action) {
@@ -75,13 +77,13 @@ public class Semantic {
                 ifP4();
                 break;
             case 113:
-                appendRepeat();
+                appendRepeatWhile();
                 break;
             case 114:
-                appendRepeatTrue();
+                appendBreakTrue();
                 break;
             case 115:
-                appendRepeatFalse();
+                appendBreakFalse();
                 break;
             case 116:
                 appendAnd();
@@ -163,6 +165,10 @@ public class Semantic {
 
     // 103
     private void appendAttribution(Token t) throws CompilationError {
+        if (types.pop() == Type.INT_64) {
+            out.append("conv.i8").append("\n");
+        }
+
         for (int i = 0; i < ids.size() - 1; i++) {
             out.append("dup").append("\n");
         }
@@ -170,6 +176,10 @@ public class Semantic {
         for (String id : ids) {
             if (!symbols.contains(id)) {
                 throw new CompilationError("%s não declarado".formatted(id), t.lineNumber());
+            }
+
+            if (retrieveTypeFromId(id) == Type.INT_64) {
+                out.append("conv.i8").append("\n");
             }
 
             out.append("stloc %s".formatted(id)).append("\n");
@@ -187,9 +197,9 @@ public class Semantic {
             throw new CompilationError("%s não declarado".formatted(id), t.lineNumber());
         }
 
-        out.append("call string [mscorlib]System.Console::ReadLine()".formatted(id)).append("\n");
-        out.append("call %s [mscorlib]System.<classe>::Parse(string)".formatted(idType)).append("\n");
-        out.append("stdloc %s".formatted(id)).append("\n");
+        out.append("call string [mscorlib]System.Console::ReadLine()").append("\n");
+        out.append("call %s [mscorlib]System.%s::Parse(string)".formatted(idType.serialize(), castOurTypeToIlasm(idType))).append("\n");
+        out.append("stloc %s".formatted(id)).append("\n");
     }
 
     // 106
@@ -210,23 +220,19 @@ public class Semantic {
     private void appendOutput() {
         Type type = types.pop();
 
-        String outputLine = "call void [mscorlib]System.Console::Write(%s)";
-
         if (type == Type.INT_64) {
-            out.append("conv.r8").append("\n");
-            out.append(outputLine.formatted(Type.FLOAT_64.serialize()));
+            out.append("conv.i8").append("\n");
         }
-        else
-            out.append(outputLine.formatted(type.serialize()));
 
-        out.append("\n");
+        out.append("call void [mscorlib]System.Console::Write(%s)".formatted(type.serialize())).append("\n");
     }
 
     // 109
     private void ifP1() {
-        String label1 = "L" + labels.size();
+        String label1 = newLabel();
         labels.push(label1);
-        String label2 = "L" + labels.size();
+
+        String label2 = newLabel();
         labels.push(label2);
 
         out.append("brfalse %s".formatted(label2)).append("\n");
@@ -246,14 +252,12 @@ public class Semantic {
 
     // 111
     private void ifP3() {
-        String label = labels.pop();
-
-        out.append("%s:".formatted(label)).append("\n");
+        out.append("%s:".formatted(labels.pop())).append("\n");
     }
 
     // 112
     private void ifP4() {
-        String label = "L" + labels.size();
+        String label = newLabel();
 
         out.append("brfalse %s".formatted(label)).append("\n");
 
@@ -261,26 +265,22 @@ public class Semantic {
     }
 
     // 113
-    private void appendRepeat() {
-        String label = "L" + labels.size();
+    private void appendRepeatWhile() {
+        String newLabel = newLabel();
 
-        out.append("%s:".formatted(label)).append("\n");
+        out.append("%s:".formatted(newLabel)).append("\n");
 
-        labels.push(label);
+        labels.push(newLabel);
     }
 
     // 114
-    private void appendRepeatTrue() {
-        String label = labels.pop();
-
-        out.append("brtrue %s".formatted(label)).append("\n");
+    private void appendBreakTrue() {
+        out.append("brtrue %s".formatted(labels.pop())).append("\n");
     }
 
     // 115
-    private void appendRepeatFalse() {
-        String label = labels.pop();
-
-        out.append("brfalse %s".formatted(label)).append("\n");
+    private void appendBreakFalse() {
+        out.append("brfalse %s".formatted(labels.pop())).append("\n");
     }
 
     // 116
@@ -373,19 +373,22 @@ public class Semantic {
 
     // 126
     private void appendDiv() {
-        compareTwoTypesAndPushResultingType();
+        types.push(Type.FLOAT_64);
         out.append("div").append("\n");
     }
 
     // 127
     private void n127(Token t) throws CompilationError {
         String id = t.lexeme();
+
         if (!symbols.contains(id)) {
             throw new CompilationError("%s não declarado".formatted(id), t.lineNumber());
         }
 
         Type type = retrieveTypeFromId(id);
+
         types.push(type);
+
         out.append("ldloc %s".formatted(id)).append("\n");
 
         if (type == Type.INT_64) {
@@ -397,6 +400,7 @@ public class Semantic {
     private void appendInt(String lexeme) {
         types.push(Type.INT_64);
         out.append("ldc.i8 %s".formatted(lexeme)).append("\n");
+        out.append("conv.r8").append("\n");
     }
 
     // 129
@@ -425,6 +429,10 @@ public class Semantic {
 
     // utilities
 
+    private String newLabel() {
+        return "L" + labelCounter++;
+    }
+
     private void compareTwoTypesAndPushResultingType() {
         types.push(types.pop().take(types.pop()));
     }
@@ -436,6 +444,15 @@ public class Semantic {
             case 's' -> Type.STRING;
             case 'b' -> Type.BOOLEAN;
             default -> throw new IllegalStateException("Unexpected value: " + id.charAt(0));
+        };
+    }
+
+    private String castOurTypeToIlasm(Type idType) {
+        return switch (idType) {
+            case INT_64 -> "Int64";
+            case FLOAT_64 -> "Double";
+            case BOOLEAN -> "Boolean";
+            case STRING -> "String";
         };
     }
 
