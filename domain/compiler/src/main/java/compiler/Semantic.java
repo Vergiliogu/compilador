@@ -135,10 +135,6 @@ public class Semantic {
 
     // 103
     private void appendAttribution(Token t) throws CompilationError {
-        if (types.pop() == Type.INT_64) {
-            out.append("conv.r8").append("\n");
-        }
-
         for (int i = 0; i < ids.size() - 1; i++) {
             out.append("dup").append("\n");
         }
@@ -148,7 +144,7 @@ public class Semantic {
                 throw new CompilationError("%s não declarado".formatted(id), t.lineNumber());
             }
 
-            out.append("stdloc %s".formatted(id)).append("\n");
+            out.append("stloc %s".formatted(id)).append("\n");
         }
 
         ids.clear();
@@ -188,8 +184,10 @@ public class Semantic {
 
         String outputLine = "call void [mscorlib]System.Console::Write(%s)";
 
-        if (type == Type.INT_64)
+        if (type == Type.INT_64) {
+            out.append("conv.r8").append("\n");
             out.append(outputLine.formatted(Type.FLOAT_64.serialize()));
+        }
         else
             out.append(outputLine.formatted(type.serialize()));
 
@@ -290,7 +288,6 @@ public class Semantic {
     private void appendInt(String lexeme) {
         types.push(Type.INT_64);
         out.append("ldc.i8 %s".formatted(lexeme)).append("\n");
-        out.append("conv.r8").append("\n");
     }
 
     // 129
