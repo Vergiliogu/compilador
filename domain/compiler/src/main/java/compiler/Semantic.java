@@ -28,6 +28,7 @@ public class Semantic {
     private final Deque<Type> types = new ArrayDeque<>();
     private final List<String> ids = new LinkedList<>();
     private final List<String> symbols = new LinkedList<>();
+    private String relationalOperator = "";
 
     private final StringBuilder out = new StringBuilder();
 
@@ -68,6 +69,12 @@ public class Semantic {
                 break;
             case 120:
                 appendNot();
+                break;
+            case 121:
+                appendRelationalOperator(t);
+                break;
+            case 122:
+                appendLogicalOperation();
                 break;
             case 123:
                 appendSum();
@@ -205,6 +212,38 @@ public class Semantic {
     private void appendNot() {
         out.append("ldc.i4.1").append("\n");
         out.append("xor").append("\n");
+    }
+
+    // 121
+    private void appendRelationalOperator(Token t) {
+        relationalOperator = t.lexeme();
+    }
+
+    // 122
+    private void appendLogicalOperation() throws IllegalStateException {
+        types.pop();
+        types.pop();
+
+        switch (relationalOperator) {
+            case "==":
+                out.append("ceq").append("\n");
+                break;
+            case "!=":
+                out.append("ceq").append("\n");
+                out.append("ldc.i4.1").append("\n");
+                out.append("xor").append("\n");
+                break;
+            case "<":
+                out.append("clt").append("\n");
+                break;
+            case ">":
+                out.append("cgt").append("\n");
+                break;
+            default:
+                throw new IllegalStateException("Operador relacional inválido: " + relationalOperator);
+        }
+
+        types.push(Type.BOOLEAN);
     }
 
     // 123
