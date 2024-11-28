@@ -28,6 +28,7 @@ public class Semantic {
     private final Deque<Type> types = new ArrayDeque<>();
     private final List<String> ids = new LinkedList<>();
     private final List<String> symbols = new LinkedList<>();
+    private final Deque<String> labels = new ArrayDeque<>();
     private String relationalOperator = "";
 
     private final StringBuilder out = new StringBuilder();
@@ -60,6 +61,18 @@ public class Semantic {
                 break;
             case 108:
                 appendOutput();
+                break;
+            case 109:
+                n109();
+                break;
+            case 110:
+                n110();
+                break;
+            case 111:
+                n111();
+                break;
+            case 112:
+                n112();
                 break;
             case 116:
                 appendAnd();
@@ -200,6 +213,44 @@ public class Semantic {
             out.append(outputLine.formatted(type.serialize()));
 
         out.append("\n");
+    }
+
+    // 109
+    private void n109() {
+        String label1 = "L" + labels.size();
+        labels.push(label1);
+        String label2 = "L" + labels.size();
+        labels.push(label2);
+
+        out.append("brfalse %s".formatted(label2)).append("\n");
+    }
+
+    // 110
+    private void n110() {
+        String label2 = labels.pop();
+        String label1 = labels.pop();
+
+        out.append("br %s".formatted(label1)).append("\n");
+
+        labels.push(label1);
+
+        out.append("%s:".formatted(label2)).append("\n");
+    }
+
+    // 111
+    private void n111() {
+        String label = labels.pop();
+
+        out.append("%s:".formatted(label)).append("\n");
+    }
+
+    // 112
+    private void n112() {
+        String label = "L" + labels.size();
+
+        out.append("brfalse %s".formatted(label)).append("\n");
+
+        labels.push(label);
     }
 
     // 116
