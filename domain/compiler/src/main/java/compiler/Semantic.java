@@ -61,6 +61,12 @@ public class Semantic {
             case 108:
                 appendOutput();
                 break;
+            case 116:
+                appendAnd();
+                break;
+            case 117:
+                appendOr();
+                break;
             case 118:
                 appendTrue();
                 break;
@@ -194,6 +200,26 @@ public class Semantic {
             out.append(outputLine.formatted(type.serialize()));
 
         out.append("\n");
+    }
+
+    // 116
+    private void appendAnd() {
+        types.pop();
+        types.pop();
+
+        out.append("and").append("\n");
+
+        types.add(Type.BOOLEAN);
+    }
+
+    // 117
+    private void appendOr() {
+        types.pop();
+        types.pop();
+
+        out.append("or").append("\n");
+
+        types.add(Type.BOOLEAN);
     }
 
     // 118
