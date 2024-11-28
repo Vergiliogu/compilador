@@ -28,6 +28,7 @@ public class Semantic {
     private final Deque<Type> types = new ArrayDeque<>();
     private final List<String> ids = new LinkedList<>();
     private final List<String> symbols = new LinkedList<>();
+    private final Deque<String> labels = new ArrayDeque<>();
     private String relationalOperator = "";
 
     private final StringBuilder out = new StringBuilder();
@@ -60,6 +61,24 @@ public class Semantic {
                 break;
             case 108:
                 appendOutput();
+                break;
+            case 109:
+                ifP1();
+                break;
+            case 110:
+                ifP2();
+                break;
+            case 111:
+                ifP3();
+                break;
+            case 112:
+                ifP4();
+                break;
+            case 116:
+                appendAnd();
+                break;
+            case 117:
+                appendOr();
                 break;
             case 118:
                 appendTrue();
@@ -192,6 +211,64 @@ public class Semantic {
             out.append(outputLine.formatted(type.serialize()));
 
         out.append("\n");
+    }
+
+    // 109
+    private void ifP1() {
+        String label1 = "L" + labels.size();
+        labels.push(label1);
+        String label2 = "L" + labels.size();
+        labels.push(label2);
+
+        out.append("brfalse %s".formatted(label2)).append("\n");
+    }
+
+    // 110
+    private void ifP2() {
+        String label2 = labels.pop();
+        String label1 = labels.pop();
+
+        out.append("br %s".formatted(label1)).append("\n");
+
+        labels.push(label1);
+
+        out.append("%s:".formatted(label2)).append("\n");
+    }
+
+    // 111
+    private void ifP3() {
+        String label = labels.pop();
+
+        out.append("%s:".formatted(label)).append("\n");
+    }
+
+    // 112
+    private void ifP4() {
+        String label = "L" + labels.size();
+
+        out.append("brfalse %s".formatted(label)).append("\n");
+
+        labels.push(label);
+    }
+
+    // 116
+    private void appendAnd() {
+        types.pop();
+        types.pop();
+
+        out.append("and").append("\n");
+
+        types.add(Type.BOOLEAN);
+    }
+
+    // 117
+    private void appendOr() {
+        types.pop();
+        types.pop();
+
+        out.append("or").append("\n");
+
+        types.add(Type.BOOLEAN);
     }
 
     // 118
