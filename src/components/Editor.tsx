@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useAppContext } from "../contexts/useAppContext";
 
@@ -78,12 +78,13 @@ export const Editor = () => {
 
           <div
             className={twMerge(
-              "absolute left-10 w-full bg-red-400/20",
+              "absolute left-10 bg-red-400/20",
               errorLine === null && 'hidden',
             )}
             style={{
               top: `calc(${(errorLine || 0) * editorRowHeight}rem - 7px)`,
               height: `${editorRowHeight}rem`,
+              width: `calc(100% - 2.5rem)`,
             }}
           >
             <span style={{
