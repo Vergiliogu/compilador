@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { useAppContext } from "../contexts/useAppContext";
 
@@ -10,11 +10,11 @@ export const Editor = () => {
   const [editorRows, setEditorRows] = useState(1);
   const [editorLongestColumn, setEditorLongestColumn] = useState(1);
 
-  const { terminalHeight, editorText, setEditorText, editorRef } = useAppContext()
+  const { terminalHeight, editorText, handleEditContent, editorRef, errorLine, errorLineText } = useAppContext()
 
   const handleEditorContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
-    setEditorText(newValue);
+    handleEditContent(newValue);
   }
 
   useEffect(() => {
@@ -33,15 +33,24 @@ export const Editor = () => {
     // Get how many rows the editor has based on the number of line breaks
     if (lines.length !== editorRows)
       setEditorRows(lines.length);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorText])
+
+  const errorRowLength = useMemo(() => {
+    if (errorLine === null) return;
+
+    const lines = editorText.split('\n')
+    const lineText = lines[errorLine - 1] || '';
+
+    return lineText.length;
+  }, [editorText, errorLine])
 
   return (
     <div className="w-full flex-grow overflow-y-hidden">
       <div
         style={{ height: `calc(100vh - ${terminalHeight}px - ${toolsBarHeight}px - ${statusBarHeight}px)` }}
       >
-        <div className="w-full h-full flex flex-row overflow-scroll">
+        <div className="w-full h-full flex flex-row overflow-scroll relative">
           <div
             className="min-w-10 w-fit py-4 min-h-full bg-gray-300 border-r-2 border-gray-400"
             style={{ height: `calc(${editorRows * editorRowHeight}rem + 25px)` }}
@@ -66,6 +75,23 @@ export const Editor = () => {
             onChange={handleEditorContent}
             value={editorText}
           />
+
+          <div
+            className={twMerge(
+              "absolute left-10 w-full bg-red-400/20",
+              errorLine === null && 'hidden',
+            )}
+            style={{
+              top: `calc(${(errorLine || 0) * editorRowHeight}rem - 7px)`,
+              height: `${editorRowHeight}rem`,
+            }}
+          >
+            <span style={{
+              marginLeft: `calc(${errorRowLength}ch + 2.5rem)`,
+            }}>
+              {errorLineText}
+            </span>
+          </div>
         </div>
       </div>
     </div>
