@@ -81,6 +81,9 @@ public class Semantic {
             case 126:
                 appendDiv();
                 break;
+            case 127:
+                n127(t);
+                break;
             case 128:
                 appendInt(t.lexeme());
                 break;
@@ -226,6 +229,22 @@ public class Semantic {
     private void appendDiv() {
         compareTwoTypesAndPushResultingType();
         out.append("div").append("\n");
+    }
+
+    // 127
+    private void n127(Token t) throws CompilationError {
+        String id = t.lexeme();
+        if (!symbols.contains(id)) {
+            throw new CompilationError("%s não declarado".formatted(id), t.lineNumber());
+        }
+
+        Type type = retrieveTypeFromId(id);
+        types.push(type);
+        out.append("ldloc %s".formatted(id)).append("\n");
+
+        if (type == Type.INT_64) {
+            out.append("conv.r8").append("\n");
+        }
     }
 
     // 128
