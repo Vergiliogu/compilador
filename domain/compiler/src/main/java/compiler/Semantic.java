@@ -74,6 +74,15 @@ public class Semantic {
             case 112:
                 ifP4();
                 break;
+            case 113:
+                appendRepeat();
+                break;
+            case 114:
+                appendRepeatTrue();
+                break;
+            case 115:
+                appendRepeatFalse();
+                break;
             case 116:
                 appendAnd();
                 break;
@@ -251,6 +260,29 @@ public class Semantic {
         out.append("brfalse %s".formatted(label)).append("\n");
 
         labels.push(label);
+    }
+
+    // 113
+    private void appendRepeat() {
+        String label = "L" + labels.size();
+
+        out.append("%s:".formatted(label)).append("\n");
+
+        labels.push(label);
+    }
+
+    // 114
+    private void appendRepeatTrue() {
+        String label = labels.pop();
+
+        out.append("brtrue %s".formatted(label)).append("\n");
+    }
+
+    // 115
+    private void appendRepeatFalse() {
+        String label = labels.pop();
+
+        out.append("brfalse %s".formatted(label)).append("\n");
     }
 
     // 116
