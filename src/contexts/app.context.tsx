@@ -92,12 +92,10 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
   }, [editorText, loadedFileMetaData])
 
   const handleCompileInLine = useCallback(async (text: string) => {
-    if (loadedFileMetaData.isNewFile) {
-      const { success } = await window.electron.writeCompilerFile(text);
-      if (!success) return;
-    }
-
-    const compiler = await window.electron.runCompiler(loadedFileMetaData.isNewFile ? undefined : loadedFileMetaData.filePath);
+    const { success } = await window.electron.writeCompilerFile(text);
+    if (!success) return;
+    
+    const compiler = await window.electron.runCompiler();
 
     const errorIndex = compiler.output.indexOf('Erro na linha ')
     if (errorIndex !== -1) {
@@ -109,7 +107,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
       setErrorLine(null);
       setErrorLineText('');
     }
-  }, [loadedFileMetaData])
+  }, [])
 
   const handleShowTeam = useCallback(() => {
     setTerminalMessage(
