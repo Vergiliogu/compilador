@@ -47,14 +47,14 @@ public class App {
     }
 
     private static void writeIlasmFile(final File sourceCodeFile, final String objectCodeContent) {
-        String fileName = sourceCodeFile.getAbsolutePath();
+        String path = sourceCodeFile.getAbsolutePath().replaceFirst("\\.\\w+$", "");
 
-        File ilasmFile = new File("%s.il".formatted(fileName));
+        File ilasmFile = new File("%s.il".formatted(path));
 
         try (FileOutputStream fileInputStream = new FileOutputStream(ilasmFile)) {
             fileInputStream.write(objectCodeContent.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            System.out.println(FILE_COULD_NOT_BE_CREATED_MESSAGE.formatted(fileName));
+            System.out.println(FILE_COULD_NOT_BE_CREATED_MESSAGE.formatted(path));
         }
     }
 }

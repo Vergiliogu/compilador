@@ -11,6 +11,6 @@ domain.iml
 !**/*/bin/classes/
 
 # test
-resources/source_code_for_test
+resources/source_code_for_test.txt
 resources/source_code_for_test.il
 resources/source_code_for_test.exe
