@@ -92,21 +92,21 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
   }, [editorText, loadedFileMetaData])
 
   const handleCompileInLine = useCallback(async (text: string) => {
-    const { success } = await window.electron.writeCompilerFile(text);
-    if (!success) return;
+    // const { success } = await window.electron.writeCompilerFile(text);
+    // if (!success) return;
     
-    const compiler = await window.electron.runCompiler();
+    // const compiler = await window.electron.runCompiler();
 
-    const errorIndex = compiler.output.indexOf('Erro na linha ')
-    if (errorIndex !== -1) {
-      const postLine = compiler.output.indexOf(' -')
-      const line = parseInt(compiler.output.slice(errorIndex + 14, postLine));
-      setErrorLine(line);
-      setErrorLineText(compiler.output.slice(postLine + 3));
-    } else {
-      setErrorLine(null);
-      setErrorLineText('');
-    }
+    // const errorIndex = compiler.output.indexOf('Erro na linha ')
+    // if (errorIndex !== -1) {
+    //   const postLine = compiler.output.indexOf(' -')
+    //   const line = parseInt(compiler.output.slice(errorIndex + 14, postLine));
+    //   setErrorLine(line);
+    //   setErrorLineText(compiler.output.slice(postLine + 3));
+    // } else {
+    //   setErrorLine(null);
+    //   setErrorLineText('');
+    // }
   }, [])
 
   const handleShowTeam = useCallback(() => {
